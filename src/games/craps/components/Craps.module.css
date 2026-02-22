@@ -1,0 +1,507 @@
+.layout {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    max-width: 940px;
+    margin: 0 auto;
+    padding: 10px;
+}
+
+/* ========= 骰子区 ========= */
+.diceArea {
+    text-align: center;
+    padding: 15px 0 10px;
+}
+
+/* ========= ON/OFF Puck ========= */
+.puckRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.puck {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: all 0.4s ease;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+.puckOff {
+    background: linear-gradient(145deg, #333, #111);
+    color: #666;
+    border: 3px solid #444;
+}
+
+.puckOn {
+    background: linear-gradient(145deg, #fff, #e0e0e0);
+    color: #000;
+    border: 3px solid #ffd700;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 3px 12px rgba(0, 0, 0, 0.4);
+}
+
+.pointNumber {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: #ffd700;
+    letter-spacing: 1px;
+}
+
+/* ========= 信息栏 ========= */
+.messageBar {
+    text-align: center;
+    padding: 12px 20px;
+    background: rgba(0, 0, 0, 0.35);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 215, 0, 0.25);
+    color: #ffd700;
+    font-size: 0.95rem;
+    letter-spacing: 0.5px;
+}
+
+.messageWin {
+    border-color: rgba(76, 175, 80, 0.5);
+    background: rgba(76, 175, 80, 0.12);
+    color: #81c784;
+    animation: winPulse 0.6s ease-out;
+}
+
+.messageLose {
+    border-color: rgba(244, 67, 54, 0.4);
+    background: rgba(244, 67, 54, 0.1);
+    color: #ef9a9a;
+}
+
+@keyframes winPulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 20px rgba(76, 175, 80, 0.3);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ========= 牌桌容器 ========= */
+.tableArea {
+    background: linear-gradient(145deg, rgba(10, 50, 20, 0.7), rgba(5, 30, 10, 0.85));
+    border-radius: 18px;
+    border: 2px solid rgba(76, 175, 80, 0.3);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ========= 主下注区：Pass / Don't Pass ========= */
+.mainBetRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.betBtn {
+    padding: 20px 14px;
+    border-radius: 12px;
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.25s ease;
+    position: relative;
+    overflow: hidden;
+    color: #fff;
+}
+
+.betBtn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.betBtn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+    border-color: rgba(255, 255, 255, 0.3);
+}
+
+.betBtn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.passBtn {
+    background: linear-gradient(135deg, #1b5e20, #2e7d32);
+    border-color: rgba(76, 175, 80, 0.4);
+}
+
+.dontPassBtn {
+    background: linear-gradient(135deg, #b71c1c, #c62828);
+    border-color: rgba(244, 67, 54, 0.4);
+}
+
+.comeBtn {
+    background: linear-gradient(135deg, #1565c0, #1976d2);
+    border-color: rgba(33, 150, 243, 0.4);
+}
+
+.dontComeBtn {
+    background: linear-gradient(135deg, #d84315, #e64a19);
+    border-color: rgba(255, 87, 34, 0.4);
+}
+
+.betLabel {
+    font-size: 1.15rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.betOdds {
+    font-size: 0.75rem;
+    color: #ffd700;
+    font-weight: bold;
+}
+
+.betDesc {
+    font-size: 0.7rem;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* ========= Field 横跨全宽 ========= */
+.fieldBet {
+    background: linear-gradient(135deg, #4a148c, #6a1b9a);
+    border-color: rgba(186, 104, 200, 0.4);
+}
+
+.fieldNumbers {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.fieldNum {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.fieldNumBonus {
+    background: rgba(255, 215, 0, 0.25);
+    color: #ffd700;
+}
+
+/* ========= 分隔线 ========= */
+.divider {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.divider::before,
+.divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* ========= Proposition Bets ========= */
+.propBetsRow {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.anySevenBtn {
+    background: linear-gradient(135deg, #e65100, #bf360c);
+    border-color: rgba(255, 152, 0, 0.4);
+}
+
+.anyCrapsBtn {
+    background: linear-gradient(135deg, #880e4f, #ad1457);
+    border-color: rgba(233, 30, 99, 0.4);
+}
+
+/* ========= 筹码标记 ========= */
+.chipBadge {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background: linear-gradient(135deg, #ffd700, #ffab00);
+    color: #000;
+    font-size: 0.65rem;
+    font-weight: bold;
+    padding: 3px 7px;
+    border-radius: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    animation: chipPop 0.3s ease-out;
+}
+
+@keyframes chipPop {
+    0% {
+        transform: scale(0);
+    }
+
+    70% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* ========= 控制区 ========= */
+.controls {
+    background: rgba(0, 0, 0, 0.45);
+    padding: 18px 20px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.statsRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    color: #999;
+    font-size: 0.95rem;
+}
+
+.stat strong {
+    color: #fff;
+    font-size: 1.05rem;
+}
+
+.resetBalBtn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #aaa;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    margin-left: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    vertical-align: middle;
+    padding: 0;
+}
+
+.resetBalBtn:hover {
+    border-color: #ffd700;
+    color: #ffd700;
+}
+
+/* ========= 历史记录 ========= */
+.history {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+}
+
+.histItem {
+    padding: 3px 10px;
+    border-radius: 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    transition: all 0.2s;
+}
+
+.histNatural {
+    background: rgba(76, 175, 80, 0.25);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.histCraps {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ef9a9a;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.histPoint {
+    background: rgba(255, 215, 0, 0.15);
+    color: #ffd700;
+    border: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+.histSevenOut {
+    background: rgba(244, 67, 54, 0.2);
+    color: #ef9a9a;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+.histPointHit {
+    background: rgba(76, 175, 80, 0.25);
+    color: #81c784;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.histContinue {
+    background: rgba(255, 255, 255, 0.08);
+    color: #aaa;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* ========= 筹码行 ========= */
+.chipRow {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.chip {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 4px dashed rgba(255, 255, 255, 0.3);
+    background: #c62828;
+    color: #fff;
+    font-weight: bold;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+}
+
+.chip:nth-child(2) {
+    background: #1565c0;
+}
+
+.chip:nth-child(3) {
+    background: #2e7d32;
+}
+
+.chip:nth-child(4) {
+    background: #7b1fa2;
+}
+
+.chip:nth-child(5) {
+    background: #ff8f00;
+}
+
+.chipSel {
+    transform: scale(1.2);
+    border: 4px solid #fff;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* ========= 按钮行 ========= */
+.btnRow {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.rollBtn,
+.clearBtn,
+.resetBtn {
+    padding: 12px 32px;
+    border-radius: 30px;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.25s;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+}
+
+.rollBtn {
+    background: linear-gradient(135deg, #1b5e20, #388e3c);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(27, 94, 32, 0.3);
+}
+
+.rollBtn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(27, 94, 32, 0.5);
+}
+
+.rollBtn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.clearBtn {
+    background: rgba(255, 255, 255, 0.08);
+    color: #ccc;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.clearBtn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.resetBtn {
+    background: linear-gradient(135deg, #ffd700, #ffab00);
+    color: #000;
+    box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+.resetBtn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
+}
+
+/* ========= 响应式 ========= */
+@media (max-width: 700px) {
+    .mainBetRow {
+        grid-template-columns: 1fr;
+    }
+
+    .propBetsRow {
+        grid-template-columns: 1fr;
+    }
+
+    .puck {
+        width: 42px;
+        height: 42px;
+        font-size: 0.65rem;
+    }
+}

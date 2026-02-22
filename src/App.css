@@ -1,0 +1,333 @@
+:root {
+  --primary-color: #3498db;
+  --secondary-color: #2c3e50;
+  --bg-color: #0f172a;
+  --text-color: #f8fafc;
+  --gold-primary: #d4af37;
+  --gold-secondary: #b8860b;
+}
+
+body {
+  margin: 0;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden;
+}
+
+.app-container {
+  min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+.game-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.game-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
+  margin-bottom: 20px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.game-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  align-items: center;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.deck-status {
+  font-family: 'Roboto Mono', monospace;
+  color: #aaa;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+  text-align: right;
+  width: 100%;
+}
+
+.edu-hub-btn {
+  background: rgba(46, 125, 50, 0.1);
+  color: #81c784;
+  border: 1px solid rgba(46, 125, 50, 0.3);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.edu-hub-btn:hover {
+  background: rgba(46, 125, 50, 0.2);
+  border-color: #81c784;
+}
+
+/* Blackjack Layout */
+.blackjack-layout {
+  width: 100%;
+  max-width: 1000px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.strategy-hint-banner {
+  background: rgba(255, 215, 0, 0.1);
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  color: #ffd700;
+  padding: 12px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-weight: 600;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.hint-icon {
+  font-size: 1.4rem;
+}
+
+/* Roulette Layout */
+.roulette-layout {
+  width: 100%;
+  max-width: 1100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+/* Slots Layout */
+.slots-layout {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 30px;
+}
+
+.result-display {
+  font-size: 4rem;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.3);
+  padding: 20px 60px;
+  border-radius: 50px;
+  border: 4px solid #ffd700;
+  min-width: 120px;
+  text-align: center;
+}
+
+.spinning-anim {
+  animation: pulse 0.5s infinite alternate;
+}
+
+@keyframes pulse {
+  from {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  to {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+}
+
+/* Common */
+.game-stats-floating {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.balance-info {
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  border-radius: 20px;
+  color: #fff;
+  font-weight: bold;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.controls-area {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.app-footer {
+  text-align: center;
+  color: #444;
+  font-size: 0.75rem;
+  margin-top: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 20px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============ 响应式设计 ============ */
+
+/* 平板 */
+@media (max-width: 768px) {
+  .app-container {
+    padding: 10px;
+  }
+
+  .game-header {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px;
+  }
+
+  .header-left {
+    gap: 10px;
+  }
+
+  .header-left h1 {
+    font-size: 1.1rem;
+  }
+
+  .header-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .mode-btn,
+  .edu-hub-btn,
+  .help-btn,
+  .back-btn {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+
+  .game-area {
+    gap: 15px;
+  }
+
+  .blackjack-layout,
+  .roulette-layout,
+  .slots-layout {
+    gap: 20px;
+  }
+
+  .result-display {
+    font-size: 2.5rem;
+    padding: 15px 40px;
+  }
+
+  .strategy-hint-banner {
+    font-size: 0.85rem;
+    padding: 8px 14px;
+  }
+}
+
+/* 手机 */
+@media (max-width: 480px) {
+  .app-container {
+    padding: 6px;
+  }
+
+  .game-header {
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 8px;
+  }
+
+  .header-left h1 {
+    font-size: 0.95rem;
+  }
+
+  .mode-btn,
+  .edu-hub-btn,
+  .help-btn,
+  .back-btn {
+    padding: 5px 8px;
+    font-size: 0.7rem;
+    letter-spacing: 0;
+  }
+
+  .game-area {
+    gap: 10px;
+    max-width: 100%;
+  }
+
+  .controls-area {
+    flex-direction: column;
+  }
+
+  .result-display {
+    font-size: 2rem;
+    padding: 10px 30px;
+    border-width: 2px;
+  }
+
+  .strategy-hint-banner {
+    font-size: 0.75rem;
+    padding: 6px 10px;
+  }
+
+  .app-footer {
+    margin-top: 20px;
+    font-size: 0.65rem;
+  }
+}

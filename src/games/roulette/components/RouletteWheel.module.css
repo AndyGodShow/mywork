@@ -1,0 +1,262 @@
+/* Full-screen overlay with backdrop blur */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: overlayIn 0.4s ease-out;
+}
+
+.overlayExit {
+    animation: overlayOut 0.5s ease-in forwards;
+}
+
+@keyframes overlayIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes overlayOut {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0;
+    }
+}
+
+/* Modal card */
+.modal {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 30px 40px 36px;
+    background: radial-gradient(ellipse at 30% 20%, rgba(40, 40, 70, 0.95), rgba(15, 15, 30, 0.98));
+    border: 1px solid rgba(201, 160, 52, 0.35);
+    border-radius: 24px;
+    box-shadow:
+        0 0 60px rgba(201, 160, 52, 0.15),
+        0 30px 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: modalIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modalExit {
+    animation: modalOut 0.4s ease-in forwards;
+}
+
+@keyframes modalIn {
+    from {
+        transform: scale(0.3) translateY(40px);
+        opacity: 0;
+    }
+
+    to {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes modalOut {
+    from {
+        transform: scale(1) translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: scale(0.6) translateY(-30px);
+        opacity: 0;
+    }
+}
+
+/* Title */
+.modalTitle {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.9);
+    letter-spacing: 2px;
+    text-align: center;
+}
+
+.modalTitle .red {
+    color: #ef5350;
+}
+
+.modalTitle .black {
+    color: #b0b0c0;
+}
+
+.modalTitle .green {
+    color: #66bb6a;
+}
+
+/* Wheel area */
+.wheelContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+
+/* Pointer */
+.pointer {
+    color: #ffd700;
+    font-size: 1.6rem;
+    z-index: 10;
+    filter: drop-shadow(0 2px 8px rgba(255, 215, 0, 0.7));
+    margin-bottom: -10px;
+    animation: pointerPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pointerPulse {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(4px);
+        opacity: 0.6;
+    }
+}
+
+/* Wheel frame */
+.wheelFrame {
+    position: relative;
+    width: 440px;
+    height: 440px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #3e2410 60%, #2a1508 80%, #1a0d04 100%);
+    box-shadow:
+        0 0 0 5px #5d3a1a,
+        0 0 0 7px #c9a034,
+        0 0 0 11px #3e2410,
+        0 0 50px rgba(201, 160, 52, 0.25),
+        0 0 100px rgba(201, 160, 52, 0.1),
+        inset 0 0 40px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheelSvg {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+/* Ball track */
+.ballTrack {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.ball {
+    position: absolute;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 30% 30%, #ffffff, #e8e8e8 30%, #bbbbbb 100%);
+    box-shadow:
+        0 0 10px rgba(255, 255, 255, 0.9),
+        0 0 20px rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(0, 0, 0, 0.6),
+        inset 0 -2px 3px rgba(0, 0, 0, 0.15);
+    z-index: 5;
+}
+
+/* Result badge */
+.resultBadge {
+    font-size: 2.4rem;
+    font-weight: 900;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    border: 3px solid #c9a034;
+    box-shadow:
+        0 0 30px rgba(201, 160, 52, 0.4),
+        0 4px 20px rgba(0, 0, 0, 0.5);
+    animation: resultPop 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    font-family: 'Georgia', serif;
+    letter-spacing: 1px;
+}
+
+.resultBadge.red {
+    background: linear-gradient(135deg, #b71c1c, #e53935);
+    box-shadow: 0 0 30px rgba(229, 57, 53, 0.5), 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.resultBadge.black {
+    background: linear-gradient(135deg, #1a1a2e, #2d2d44);
+    box-shadow: 0 0 30px rgba(100, 100, 140, 0.3), 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+.resultBadge.green {
+    background: linear-gradient(135deg, #087f23, #2e7d32);
+    box-shadow: 0 0 30px rgba(46, 125, 50, 0.5), 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes resultPop {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.2);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .modal {
+        padding: 20px 24px 28px;
+    }
+
+    .wheelFrame {
+        width: 340px;
+        height: 340px;
+    }
+
+    .modalTitle {
+        font-size: 1.1rem;
+    }
+
+    .resultBadge {
+        width: 56px;
+        height: 56px;
+        font-size: 1.8rem;
+    }
+}

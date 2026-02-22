@@ -1,0 +1,106 @@
+.beadPlateContainer {
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: inline-block;
+    border-radius: 12px;
+    margin-top: 20px;
+    box-shadow:
+        0 4px 20px rgba(0, 0, 0, 0.5),
+        inset 0 0 20px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(10px);
+}
+
+.grid {
+    display: grid;
+    grid-template-rows: repeat(6, 1fr);
+    grid-auto-flow: column;
+    gap: 2px;
+    /* Bigger gap for grid look */
+    background: transparent;
+    border: none;
+}
+
+.cell {
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.03);
+    /* Subtle cell bg */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-radius: 4px;
+    /* Rounded cells */
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.bead {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 900;
+    color: white;
+    position: relative;
+    /* Glossy Bead Effect */
+    box-shadow:
+        inset 0 -2px 5px rgba(0, 0, 0, 0.5),
+        inset 0 2px 5px rgba(255, 255, 255, 0.4),
+        0 2px 4px rgba(0, 0, 0, 0.4);
+    font-family: 'Inter', sans-serif;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 5;
+}
+
+.playerBead {
+    background: radial-gradient(circle at 30% 30%, #3498db, #154360);
+    border: 1px solid #1f618d;
+}
+
+.bankerBead {
+    background: radial-gradient(circle at 30% 30%, #e74c3c, #922b21);
+    border: 1px solid #c0392b;
+}
+
+.tieBead {
+    background: radial-gradient(circle at 30% 30%, #2ecc71, #145a32);
+    border: 1px solid #1e8449;
+}
+
+.playerPairDot {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background: #3498db;
+    border: 1px solid white;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.bankerPairDot {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    width: 8px;
+    height: 8px;
+    background: #e74c3c;
+    border: 1px solid white;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+}
+
+.emptyCell {
+    width: 34px;
+    height: 34px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.02);
+}

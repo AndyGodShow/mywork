@@ -1,0 +1,217 @@
+.tableContainer {
+    position: relative;
+    width: 100%;
+    min-height: 600px;
+    border-radius: 40px;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow: hidden;
+
+    /* Authentic Felt Look - Matching Baccarat */
+    background: radial-gradient(circle at center, #2C3E50 0%, #17202A 100%);
+    box-shadow:
+        inset 0 0 80px rgba(0, 0, 0, 0.8),
+        0 20px 50px rgba(0, 0, 0, 0.5),
+        0 0 0 10px #1A1A1A,
+        0 0 0 12px #333;
+
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Texture overlay for felt */
+.tableContainer::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    opacity: 0.1;
+    background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.5'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 1;
+}
+
+.deckInfo {
+    position: absolute;
+    top: 25px;
+    right: 35px;
+    background: rgba(0, 0, 0, 0.4);
+    padding: 10px 18px;
+    border-radius: 12px;
+    color: #F4D03F;
+    /* Gold for visibility */
+    font-size: 0.9rem;
+    font-weight: 700;
+    font-family: 'Roboto Mono', monospace;
+    z-index: 20;
+    /* High z-index to avoid overlap */
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.statusMessage {
+    text-align: center;
+    margin: 40px 0;
+    /* Add more space */
+    font-size: 1.5rem;
+    color: #F4D03F;
+    /* Gold */
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    min-height: 1.5em;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    z-index: 10;
+}
+
+.playArea {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 40px;
+    position: relative;
+    flex: 1;
+    z-index: 5;
+}
+
+/* Zone Styles - Replicating Baccarat */
+.zone {
+    flex: 1;
+    border-radius: 20px;
+    padding: 25px;
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.3);
+}
+
+.dealerZone {
+    border-color: rgba(231, 76, 60, 0.2);
+    /* Red theme for dealer/house */
+}
+
+.playerZone {
+    border-color: rgba(52, 152, 219, 0.2);
+    /* Blue theme for player */
+}
+
+.zoneHeader {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 30px;
+    gap: 10px;
+}
+
+.zoneHeader h2 {
+    margin: 0;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 700;
+    font-family: 'Cinzel', serif;
+}
+
+.dealerZone h2 {
+    color: #e74c3c;
+    text-shadow: 0 0 10px rgba(231, 76, 60, 0.3);
+}
+
+.playerZone h2 {
+    color: #3498db;
+    text-shadow: 0 0 10px rgba(52, 152, 219, 0.3);
+}
+
+.score {
+    font-size: 3rem;
+    font-weight: 700;
+    color: #fff;
+    font-family: 'Roboto Mono', monospace;
+    line-height: 1;
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+.cardsContainer {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    /* Separate cards */
+    flex-wrap: wrap;
+    flex-grow: 1;
+    align-items: center;
+    perspective: 1000px;
+}
+
+/* Card Overlap Logic - Removed negative margin */
+.cardWrapper {
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cardWrapper:hover {
+    transform: translateY(-20px) scale(1.05);
+    z-index: 10;
+}
+
+.betCircle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 2px dashed rgba(244, 208, 63, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+    color: rgba(244, 208, 63, 0.5);
+    font-size: 0.75rem;
+    font-family: 'Roboto Mono', monospace;
+    transition: all 0.3s;
+}
+
+.activeBet {
+    background: radial-gradient(circle at 30% 30%, #F4D03F, #9A7D0A);
+    border: 2px solid #fff;
+    color: #1a1a1a;
+    font-weight: 900;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
+}
+
+.centerInfo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    position: relative;
+    width: 2px;
+    background: linear-gradient(to bottom, transparent, rgba(212, 175, 55, 0.3), transparent);
+}
+
+.vsBadge {
+    background: #0f1215;
+    color: #F4D03F;
+    font-family: 'Cinzel', serif;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+}
+
+.placeholder {
+    color: rgba(255, 255, 255, 0.1);
+    font-style: italic;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+}

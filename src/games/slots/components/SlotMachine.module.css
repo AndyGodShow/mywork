@@ -1,0 +1,615 @@
+/* ===== 机器框架 ===== */
+.machineFrame {
+    background: linear-gradient(180deg, #12101f 0%, #1a1632 40%, #0d1b3a 100%);
+    border: 3px solid;
+    border-image: linear-gradient(180deg, #ffd700, #c8960c, #ffd700) 1;
+    border-radius: 24px;
+    padding: 0;
+    box-shadow:
+        0 0 50px rgba(212, 175, 55, 0.25),
+        0 0 100px rgba(0, 0, 0, 0.6),
+        inset 0 0 40px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    max-width: 720px;
+    width: 100%;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+}
+
+/* 大奖震动 */
+.jackpotShake {
+    animation: machineShake 0.4s ease-in-out 3;
+}
+
+@keyframes machineShake {
+
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+
+    20% {
+        transform: translateX(-6px) rotate(-0.5deg);
+    }
+
+    40% {
+        transform: translateX(6px) rotate(0.5deg);
+    }
+
+    60% {
+        transform: translateX(-4px) rotate(-0.3deg);
+    }
+
+    80% {
+        transform: translateX(4px) rotate(0.3deg);
+    }
+}
+
+/* ===== 顶部装饰灯条 ===== */
+.lightBar {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 20px 4px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.5), transparent);
+}
+
+.light {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 200, 50, 0.3), rgba(255, 150, 0, 0.1));
+    box-shadow: 0 0 4px rgba(255, 200, 50, 0.2);
+    animation: lightIdle 2s ease-in-out infinite alternate;
+}
+
+.lightWin {
+    animation: lightFlash 0.4s ease-in-out infinite alternate !important;
+    background: radial-gradient(circle, #ffd700, #ff8c00);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.9), 0 0 24px rgba(255, 140, 0, 0.5);
+}
+
+@keyframes lightIdle {
+    0% {
+        opacity: 0.3;
+    }
+
+    100% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes lightFlash {
+    0% {
+        opacity: 0.5;
+        box-shadow: 0 0 6px rgba(255, 215, 0, 0.4);
+    }
+
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 16px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 140, 0, 0.6);
+    }
+}
+
+/* ===== 机器标题 ===== */
+.machineHeader {
+    text-align: center;
+    padding: 6px 0 10px;
+}
+
+.machineLogo {
+    font-size: 1.8rem;
+    font-weight: 900;
+    letter-spacing: 6px;
+    background: linear-gradient(135deg, #ffd700 0%, #fff4a3 25%, #ffd700 50%, #ff8c00 75%, #ffd700 100%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: shimmerText 3s linear infinite;
+    filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.4));
+}
+
+@keyframes shimmerText {
+    0% {
+        background-position: 0% center;
+    }
+
+    100% {
+        background-position: 200% center;
+    }
+}
+
+/* ===== 卷轴容器 ===== */
+.reelsContainer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 0 16px;
+}
+
+.lineMarkers {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 4px 0;
+}
+
+.lineMarker {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.08);
+    color: #555;
+    font-size: 0.55rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.winningLine {
+    background: linear-gradient(135deg, #ffd700, #ff8c00);
+    color: #000;
+    font-weight: 800;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.8);
+    animation: lineGlow 0.6s ease-in-out infinite alternate;
+    border-color: #ffd700;
+}
+
+@keyframes lineGlow {
+    from {
+        box-shadow: 0 0 6px rgba(255, 215, 0, 0.5);
+    }
+
+    to {
+        box-shadow: 0 0 18px rgba(255, 215, 0, 1);
+    }
+}
+
+/* ===== 卷轴网格 ===== */
+.reelsGrid {
+    flex: 1;
+    position: relative;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.8));
+    border-radius: 14px;
+    padding: 0;
+    border: 2px solid rgba(212, 175, 55, 0.25);
+    overflow: hidden;
+    box-shadow:
+        inset 0 4px 12px rgba(0, 0, 0, 0.8),
+        inset 0 -4px 12px rgba(0, 0, 0, 0.8),
+        0 0 20px rgba(0, 0, 0, 0.4);
+}
+
+.reelMaskTop,
+.reelMaskBottom {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 20px;
+    z-index: 3;
+    pointer-events: none;
+}
+
+.reelMaskTop {
+    top: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent);
+}
+
+.reelMaskBottom {
+    bottom: 0;
+    background: linear-gradient(0deg, rgba(0, 0, 0, 0.7), transparent);
+}
+
+.reelColumns {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 3px;
+    padding: 8px;
+}
+
+/* ===== 单个卷轴 ===== */
+.reel {
+    overflow: hidden;
+    border-radius: 8px;
+    position: relative;
+}
+
+.reelInner {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.reelSpinning {
+    animation: reelScroll 0.08s linear infinite;
+}
+
+.reelStopping {
+    animation: reelBounce 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+@keyframes reelScroll {
+    0% {
+        transform: translateY(-8px);
+    }
+
+    50% {
+        transform: translateY(8px);
+    }
+
+    100% {
+        transform: translateY(-8px);
+    }
+}
+
+@keyframes reelBounce {
+    0% {
+        transform: translateY(12px);
+    }
+
+    60% {
+        transform: translateY(-4px);
+    }
+
+    100% {
+        transform: translateY(0);
+    }
+}
+
+/* ===== 符号格子 ===== */
+.symbolCell {
+    aspect-ratio: 1;
+    background: linear-gradient(145deg, #1c2640, #233050);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+}
+
+.symbolEmoji {
+    font-size: 2.4rem;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.6));
+    transition: transform 0.3s ease;
+    z-index: 1;
+}
+
+/* 微光扫过 */
+.shimmer {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 255, 255, 0.04),
+            rgba(255, 255, 255, 0.08),
+            rgba(255, 255, 255, 0.04),
+            transparent);
+    animation: shimmerSweep 4s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 2;
+}
+
+@keyframes shimmerSweep {
+
+    0%,
+    70% {
+        left: -100%;
+    }
+
+    100% {
+        left: 200%;
+    }
+}
+
+/* ===== 中奖高亮 ===== */
+.winning {
+    background: linear-gradient(145deg, #3d3200, #5a4d00);
+    border-color: #ffd700;
+    box-shadow:
+        0 0 20px rgba(255, 215, 0, 0.5),
+        inset 0 0 15px rgba(255, 215, 0, 0.15);
+    animation: winPulse 0.7s ease-in-out infinite alternate;
+}
+
+.winning .symbolEmoji {
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 14px rgba(255, 215, 0, 0.9));
+}
+
+.winning .shimmer {
+    display: none;
+}
+
+@keyframes winPulse {
+    from {
+        box-shadow: 0 0 12px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255, 215, 0, 0.1);
+        border-color: rgba(255, 215, 0, 0.6);
+    }
+
+    to {
+        box-shadow: 0 0 28px rgba(255, 215, 0, 0.7), inset 0 0 20px rgba(255, 215, 0, 0.2);
+        border-color: rgba(255, 215, 0, 1);
+    }
+}
+
+/* ===== 中奖信息条 ===== */
+.winBanner {
+    margin: 12px 16px 0;
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    animation: winBannerIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.winSmall {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(255, 140, 0, 0.08));
+    border: 1px solid rgba(255, 215, 0, 0.25);
+}
+
+.winMedium {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.18), rgba(255, 100, 0, 0.15));
+    border: 1px solid rgba(255, 215, 0, 0.4);
+    animation: winBannerIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), mediumPulse 1.5s ease-in-out infinite;
+}
+
+.winBig {
+    background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 50, 0, 0.2));
+    border: 2px solid #ffd700;
+    box-shadow: 0 0 40px rgba(255, 215, 0, 0.4);
+}
+
+@keyframes mediumPulse {
+
+    0%,
+    100% {
+        box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
+    }
+
+    50% {
+        box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+    }
+}
+
+@keyframes winBannerIn {
+    from {
+        opacity: 0;
+        transform: translateY(15px) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.winAmountWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.jackpotLabel {
+    font-size: 0.85rem;
+    color: #ffd700;
+    font-weight: 800;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    animation: jackpotPulse 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes jackpotPulse {
+    from {
+        opacity: 0.7;
+        transform: scale(1);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+.winAmount {
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.winDetails {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+}
+
+.winLine {
+    background: rgba(0, 0, 0, 0.35);
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.78rem;
+    color: #ddd;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* ===== 粒子特效 (大奖) ===== */
+.particleContainer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+}
+
+.particle {
+    position: absolute;
+    top: -30px;
+    font-size: 1.4rem;
+    animation: particleFall linear forwards;
+    opacity: 0.9;
+    filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6));
+}
+
+@keyframes particleFall {
+    0% {
+        transform: translateY(0) rotate(0deg) scale(0.5);
+        opacity: 0;
+    }
+
+    10% {
+        opacity: 1;
+        transform: translateY(10%) rotate(30deg) scale(1);
+    }
+
+    90% {
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: translateY(120%) rotate(360deg) scale(0.3);
+        opacity: 0;
+    }
+}
+
+/* ===== 中奖闪烁覆盖 ===== */
+.mediumWinOverlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.08), transparent 70%);
+    pointer-events: none;
+    animation: overlayFlash 1.2s ease-in-out infinite;
+    z-index: 5;
+}
+
+@keyframes overlayFlash {
+
+    0%,
+    100% {
+        opacity: 0;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 768px) {
+    .machineFrame {
+        border-radius: 16px;
+    }
+
+    .machineLogo {
+        font-size: 1.2rem;
+        letter-spacing: 3px;
+    }
+
+    .symbolEmoji {
+        font-size: 1.8rem;
+    }
+
+    .reelColumns {
+        padding: 6px;
+        gap: 2px;
+    }
+
+    .light {
+        width: 8px;
+        height: 8px;
+    }
+
+    .lineMarker {
+        width: 16px;
+        height: 16px;
+        font-size: 0.45rem;
+    }
+
+    .winAmount {
+        font-size: 1.3rem;
+    }
+
+    .winBanner {
+        margin: 8px 10px 0;
+        padding: 10px;
+    }
+}
+
+@media (max-width: 480px) {
+    .machineFrame {
+        border-width: 2px;
+        border-radius: 12px;
+    }
+
+    .machineLogo {
+        font-size: 0.95rem;
+        letter-spacing: 2px;
+    }
+
+    .symbolEmoji {
+        font-size: 1.3rem;
+    }
+
+    .reelColumns {
+        padding: 4px;
+        gap: 2px;
+    }
+
+    .symbolCell {
+        border-radius: 6px;
+    }
+
+    .lightBar {
+        gap: 3px;
+        padding: 6px 10px 2px;
+    }
+
+    .light {
+        width: 6px;
+        height: 6px;
+    }
+
+    .lineMarkers {
+        display: none;
+    }
+
+    .reelsContainer {
+        padding: 0 8px;
+    }
+
+    .winBanner {
+        margin: 6px 8px 0;
+        padding: 8px;
+    }
+
+    .winAmount {
+        font-size: 1.1rem;
+    }
+
+    .winLine {
+        font-size: 0.7rem;
+        padding: 3px 8px;
+    }
+}
