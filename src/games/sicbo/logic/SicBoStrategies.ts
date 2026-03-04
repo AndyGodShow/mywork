@@ -2,7 +2,7 @@
 
 import type { SicBoBet } from '../types';
 
-export interface SicBoStrategy {
+interface SicBoStrategy {
     name: string;
     description: string;
     getBets: (baseBet: number) => SicBoBet[];

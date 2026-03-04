@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styles from './RouletteWheel.module.css';
 
 // European roulette wheel order (clockwise)
@@ -31,60 +31,96 @@ export const RouletteWheel: React.FC<RouletteWheelProps> = ({
     const [ballRotation, setBallRotation] = useState(0);
     const [showBall, setShowBall] = useState(false);
     const [animPhase, setAnimPhase] = useState<'idle' | 'spinning' | 'result' | 'closing'>('idle');
-    const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    // Store all timer IDs so we can clean them all up
+    const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+    // Store onComplete in a ref to avoid dependency issues
+    const onCompleteRef = useRef(onComplete);
+    // Track if an animation is already running to prevent re-triggers
+    const isAnimatingRef = useRef(false);
+    // Store the current wheelRotation in a ref so we can read it without depending on it
+    const wheelRotationRef = useRef(wheelRotation);
+
+    // Sync refs in effect to avoid "refs during render" lint errors
+    useEffect(() => {
+        onCompleteRef.current = onComplete;
+    }, [onComplete]);
+    useEffect(() => {
+        wheelRotationRef.current = wheelRotation;
+    }, [wheelRotation]);
+
+    const clearAllTimers = useCallback(() => {
+        timersRef.current.forEach(t => clearTimeout(t));
+        timersRef.current = [];
+    }, []);
 
     useEffect(() => {
-        if (isVisible && resultNumber !== null && animPhase === 'idle') {
-            // Start spinning
-            setTimeout(() => {
-                setShowBall(true);
-                setAnimPhase('spinning');
-            }, 0);
+        if (isVisible && resultNumber !== null && !isAnimatingRef.current) {
+            isAnimatingRef.current = true;
+            clearAllTimers();
 
             const resultIndex = WHEEL_NUMBERS.indexOf(resultNumber);
             const targetSectorAngle = resultIndex * SECTOR_ANGLE + SECTOR_ANGLE / 2;
 
             const fullRotations = 6;
-            const wheelTarget = wheelRotation + fullRotations * 360 + (Math.random() * 30);
+            const currentRotation = wheelRotationRef.current;
+            const wheelTarget = currentRotation + fullRotations * 360 + (Math.random() * 30);
 
             const ballFullRotations = 8;
             const finalBallAngle = -(targetSectorAngle + (wheelTarget % 360));
             const ballTarget = -(ballFullRotations * 360) + finalBallAngle;
 
-            setTimeout(() => {
+            // Defer state updates to avoid synchronous setState in effect body
+            const t0 = setTimeout(() => {
+                setShowBall(true);
+                setAnimPhase('spinning');
                 setWheelRotation(wheelTarget);
                 setBallRotation(ballTarget);
             }, 0);
+            timersRef.current.push(t0);
 
-            // After spin finishes, show result for 2s
-            timerRef.current = setTimeout(() => {
+            // After spin finishes (4200ms), show result for 2s, then close
+            const t1 = setTimeout(() => {
                 setAnimPhase('result');
-                timerRef.current = setTimeout(() => {
+                const t2 = setTimeout(() => {
                     setAnimPhase('closing');
-                    // Let exit animation play, then notify parent
-                    timerRef.current = setTimeout(() => {
+                    const t3 = setTimeout(() => {
                         setAnimPhase('idle');
                         setShowBall(false);
-                        onComplete();
+                        isAnimatingRef.current = false;
+                        onCompleteRef.current();
                     }, 500);
+                    timersRef.current.push(t3);
                 }, 2000);
+                timersRef.current.push(t2);
             }, 4200);
+            timersRef.current.push(t1);
         }
 
         return () => {
-            if (timerRef.current) clearTimeout(timerRef.current);
+            // Only clear timers on unmount, not on re-render
         };
-    }, [isVisible, resultNumber, animPhase, onComplete, wheelRotation]);
+    }, [isVisible, resultNumber, clearAllTimers]);
+
+    // Clean up all timers on unmount
+    useEffect(() => {
+        return () => {
+            clearAllTimers();
+        };
+    }, [clearAllTimers]);
 
     // Reset when hidden
     useEffect(() => {
         if (!isVisible) {
+            clearAllTimers();
+            // Use a microtask to avoid state conflicts
             setTimeout(() => {
                 setAnimPhase('idle');
                 setShowBall(false);
+                isAnimatingRef.current = false;
             }, 0);
         }
-    }, [isVisible]);
+    }, [isVisible, clearAllTimers]);
 
     if (!isVisible && animPhase === 'idle') return null;
 

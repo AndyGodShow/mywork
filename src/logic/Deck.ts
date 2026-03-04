@@ -1,5 +1,5 @@
 import { Card, Suit, Rank } from './Card';
-import { shuffleArray } from './Random';
+import { shuffleArray, getSecureRandomInt } from './Random';
 
 export class Deck {
     private cards: Card[] = [];
@@ -30,15 +30,18 @@ export class Deck {
         // 这是一个通用的赌场标准，大约预留 1-1.5 副牌
         const minCut = Math.floor(52 * 1);
         const maxCut = Math.floor(52 * 2);
-        this.cutIndex = Math.floor(Math.random() * (maxCut - minCut)) + minCut;
+        this.cutIndex = minCut + getSecureRandomInt(maxCut - minCut);
     }
 
     shuffle(): void {
         shuffleArray(this.cards);
     }
 
-    draw(): Card | undefined {
-        return this.cards.pop();
+    draw(): Card {
+        if (this.cards.length === 0) {
+            this.reset();
+        }
+        return this.cards.pop()!;
     }
 
     /**

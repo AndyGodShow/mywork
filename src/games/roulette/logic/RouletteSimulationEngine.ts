@@ -1,5 +1,6 @@
 import { calculateRoulettePayout } from './RouletteEngine';
 import type { RouletteStrategy } from './RouletteStrategies';
+import { getSecureRandomInt } from '../../../logic/Random';
 
 export interface RouletteSimulationResult {
     totalRounds: number;
@@ -18,6 +19,7 @@ export const runRouletteSimulation = (
     initialBalance: number = 10000
 ): RouletteSimulationResult => {
     let balance = initialBalance;
+    let playedRounds = 0;
     strategy.reset();
 
     let wins = 0;
@@ -47,7 +49,7 @@ export const runRouletteSimulation = (
         balance -= totalBetAmount;
 
         // 2. 旋转轮盘
-        const resultNum = Math.floor(Math.random() * 37);
+        const resultNum = getSecureRandomInt(37);
         numberDistribution[resultNum]++;
 
         // 3. 结算
@@ -57,24 +59,27 @@ export const runRouletteSimulation = (
         });
 
         balance += totalWin;
-        const won = totalWin > 0;
-        lastWon = won;
+        const roundProfit = totalWin - totalBetAmount;
+        const won = roundProfit > 0;
+        const lost = roundProfit < 0;
+        lastWon = won ? true : lost ? false : null;
 
         if (won) {
             wins++;
             currentStreak = currentStreak > 0 ? currentStreak + 1 : 1;
             maxWinStreak = Math.max(maxWinStreak, currentStreak);
-        } else {
+        } else if (lost) {
             losses++;
             currentStreak = currentStreak < 0 ? currentStreak - 1 : -1;
             maxLossStreak = Math.max(maxLossStreak, Math.abs(currentStreak));
         }
 
         balanceHistory.push(balance);
+        playedRounds++;
     }
 
     return {
-        totalRounds: rounds,
+        totalRounds: playedRounds,
         wins,
         losses,
         maxWinStreak,

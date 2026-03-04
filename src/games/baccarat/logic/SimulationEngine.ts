@@ -19,6 +19,7 @@ export interface SimulationResult {
 export const runSimulation = (rounds: number, strategy: BettingStrategy, initialBalance: number = 10000): SimulationResult => {
     const deck = new Deck(8);
     let balance = initialBalance;
+    let playedRounds = 0;
     strategy.reset();
 
     let currentStreak = 0;
@@ -33,13 +34,14 @@ export const runSimulation = (rounds: number, strategy: BettingStrategy, initial
 
     for (let i = 0; i < rounds; i++) {
         // Reshuffle if low
-        if (deck.remaining < 20) {
+        if (deck.shouldReshuffle()) {
             deck.reset(); // This shuffles internally
         }
 
         // 1. Ask Strategy for Bet
         if (balance <= 0) break; // Bankrupt
         const bet = strategy.getBet(history, balance, lastBet, lastResult);
+        if (bet.amount <= 0 || bet.amount > balance) break;
         lastBet = bet;
 
         // 2. Play Hand
@@ -108,6 +110,7 @@ export const runSimulation = (rounds: number, strategy: BettingStrategy, initial
 
         // Record balance after this round
         balanceHistory.push(balance);
+        playedRounds++;
 
         // 4. Streak Stats
         if (!push) {
@@ -135,7 +138,7 @@ export const runSimulation = (rounds: number, strategy: BettingStrategy, initial
     });
 
     return {
-        totalRounds: rounds,
+        totalRounds: playedRounds,
         playerWins: pWins,
         bankerWins: bWins,
         ties: tWins,

@@ -1,4 +1,5 @@
 import type { RouletteBetType, RouletteBet } from '../types';
+import { pickRandom } from '../../../logic/Random';
 
 export interface RouletteStrategy {
     name: string;
@@ -83,7 +84,7 @@ export class RandomOutsideStrategy implements RouletteStrategy {
         if (amount <= 0) return [];
 
         const outsideBets: RouletteBetType[] = ['red', 'black', 'even', 'odd', 'low', 'high'];
-        const randomType = outsideBets[Math.floor(Math.random() * outsideBets.length)];
+        const randomType = pickRandom(outsideBets);
 
         return [{ type: randomType, amount }];
     }

@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { Card } from '../../../logic/Card';
 import { Deck } from '../../../logic/Deck';
 import {
@@ -19,11 +20,14 @@ export const useBaccaratGame = () => {
     // Deck Management
     const deckRef = useRef<Deck>(new Deck(8));
 
-    // Player State (Bankroll)
+    // Balance persisted to localStorage
+    const { balance, setBalance, resetBalance: resetPersistedBalance } = usePersistedBalance('baccarat', INITIAL_BALANCE);
+
+    // Player State (Bets)
     const [playerState, setPlayerState] = useState<PlayerState>({
-        balance: INITIAL_BALANCE,
+        balance: 0, // unused — balance now managed by usePersistedBalance  
         currentBet: 0,
-        bets: {}, // Initialize empty bets
+        bets: {},
     });
 
     // Game State
@@ -50,8 +54,9 @@ export const useBaccaratGame = () => {
 
     const placeBet = (type: BetType, amount: number) => {
         if (gameState.phase !== GamePhase.Betting) return;
-        if (amount > playerState.balance) return;
+        if (!Number.isFinite(amount) || amount <= 0 || amount > balance) return;
 
+        setBalance(prev => prev - amount);
         setPlayerState((prev) => {
             const currentTypeBet = prev.bets[type] || 0;
             return {
@@ -61,16 +66,15 @@ export const useBaccaratGame = () => {
                     ...prev.bets,
                     [type]: currentTypeBet + amount,
                 },
-                balance: prev.balance - amount // Deduct immediately for multi-bet experience
             };
         });
     };
 
     const clearBet = () => {
         if (gameState.phase !== GamePhase.Betting) return;
+        setBalance(prev => prev + playerState.currentBet);
         setPlayerState(prev => ({
             ...prev,
-            balance: prev.balance + prev.currentBet, // Refund all
             currentBet: 0,
             bets: {}
         }));
@@ -119,8 +123,11 @@ export const useBaccaratGame = () => {
         }));
 
         // Check Naturals
+        // Snapshot bets before async flow continues
+        const currentBets = { ...playerState.bets };
+
         if (isNatural(pHandInitial) || isNatural(bHandInitial)) {
-            finalizeRound(pHandInitial, bHandInitial);
+            finalizeRound(pHandInitial, bHandInitial, currentBets);
             return;
         }
 
@@ -157,17 +164,16 @@ export const useBaccaratGame = () => {
             }));
         }
 
-        finalizeRound(finalPHand, finalBHand);
+        finalizeRound(finalPHand, finalBHand, currentBets);
     };
 
-    const finalizeRound = (pHand: Card[], bHand: Card[]) => {
+    const finalizeRound = (pHand: Card[], bHand: Card[], bets: Record<string, number | undefined>) => {
         const result = determineWinner(pHand, bHand);
         const pScore = calculateHandValue(pHand);
         const bScore = calculateHandValue(bHand);
 
-        // Payout Calculation
+        // Payout Calculation — uses passed-in bets (not stale closure)
         let totalPayout = 0;
-        const { bets } = playerState;
 
         // 1. Player Bet
         if (bets['PLAYER']) {
@@ -221,10 +227,10 @@ export const useBaccaratGame = () => {
 
         setPlayerState((prev) => ({
             ...prev,
-            balance: prev.balance + totalPayout,
             currentBet: 0,
             bets: {},
         }));
+        setBalance(prev => prev + totalPayout);
 
         setGameState((prev) => ({
             ...prev,
@@ -253,8 +259,9 @@ export const useBaccaratGame = () => {
     }
 
     const resetBalance = () => {
+        resetPersistedBalance();
         setPlayerState({
-            balance: INITIAL_BALANCE,
+            balance: 0,
             currentBet: 0,
             bets: {}
         });
@@ -262,12 +269,12 @@ export const useBaccaratGame = () => {
 
     return {
         gameState,
-        playerState,
+        playerState: { ...playerState, balance },
         placeBet,
         clearBet,
         startGame,
         resetForNewGame,
         resetBalance,
-        deckRemaining: 0 // Initial deck size is calculated when game starts
+        deckRemaining: 0
     };
 };

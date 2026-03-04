@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { runBlackjackSimulation } from '../logic/BlackjackSimulationEngine';
 import type { BlackjackSimulationResult } from '../logic/BlackjackSimulationEngine';
 import { AssetCurve } from '../../../components/Common/Simulation/AssetCurve';
+import { formatPercent } from '../../../components/Common/Simulation/stats';
 import {
     BasicStrategyPlayer,
     MartingaleBasicStrategy,
@@ -93,15 +94,15 @@ export const BlackjackSimulation: React.FC = () => {
                     <div className={styles.statsGrid}>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>玩家赢 (Player)</span>
-                            <span className={styles.statValue}>{result.playerWins} ({((result.playerWins / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.playerWins} ({formatPercent(result.playerWins, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>庄家赢 (Dealer)</span>
-                            <span className={styles.statValue}>{result.dealerWins} ({((result.dealerWins / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.dealerWins} ({formatPercent(result.dealerWins, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>平局 (Push)</span>
-                            <span className={styles.statValue}>{result.pushes} ({((result.pushes / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.pushes} ({formatPercent(result.pushes, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>Blackjacks</span>

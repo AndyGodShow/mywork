@@ -246,8 +246,9 @@
     }
 
     .wheelFrame {
-        width: 340px;
-        height: 340px;
+        width: 300px;
+        /* Reduced from 340px */
+        height: 300px;
     }
 
     .modalTitle {

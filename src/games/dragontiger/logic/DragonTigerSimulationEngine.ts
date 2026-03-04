@@ -28,6 +28,7 @@ export const runDragonTigerSimulation = (config: DTSimulationConfig): DTSimulati
     const { rounds, initialBalance, bets, useMartingale = false } = config;
 
     let balance = initialBalance;
+    let playedRounds = 0;
     let wins = 0, losses = 0;
     let totalWagered = 0, totalReturned = 0;
     let consecutiveLosses = 0, maxConsecutiveLosses = 0;
@@ -37,6 +38,15 @@ export const runDragonTigerSimulation = (config: DTSimulationConfig): DTSimulati
     const resultDistribution: Record<DragonTigerResult, number> = { dragon: 0, tiger: 0, tie: 0 };
 
     for (let i = 0; i < rounds; i++) {
+        if (balance <= 0) break;
+
+        const scaledBets: DragonTigerBet[] = bets.map(baseBet => ({
+            ...baseBet,
+            amount: useMartingale ? baseBet.amount * multiplier : baseBet.amount,
+        }));
+        const hasAffordableBet = scaledBets.some(bet => bet.amount > 0 && bet.amount <= balance);
+        if (!hasAffordableBet) break;
+
         const deck = createShuffledDeck();
         const dragonCard = deck[0];
         const tigerCard = deck[1];
@@ -46,8 +56,7 @@ export const runDragonTigerSimulation = (config: DTSimulationConfig): DTSimulati
         resultDistribution[result]++;
 
         let roundWagered = 0, roundReturned = 0;
-        for (const baseBet of bets) {
-            const bet: DragonTigerBet = { ...baseBet, amount: useMartingale ? baseBet.amount * multiplier : baseBet.amount };
+        for (const bet of scaledBets) {
             if (bet.amount > balance) continue;
             roundWagered += bet.amount;
             balance -= bet.amount;
@@ -58,23 +67,27 @@ export const runDragonTigerSimulation = (config: DTSimulationConfig): DTSimulati
 
         totalWagered += roundWagered;
         totalReturned += roundReturned;
+        if (roundWagered === 0) break;
 
-        if (roundReturned > roundWagered) {
+        const roundProfit = roundReturned - roundWagered;
+
+        if (roundProfit > 0) {
             wins++; consecutiveLosses = 0;
             consecutiveWins++;
             if (consecutiveWins > maxConsecutiveWins) maxConsecutiveWins = consecutiveWins;
             if (useMartingale) multiplier = 1;
-        } else {
+        } else if (roundProfit < 0) {
             losses++; consecutiveWins = 0;
             consecutiveLosses++;
             if (useMartingale) multiplier *= 2;
             if (consecutiveLosses > maxConsecutiveLosses) maxConsecutiveLosses = consecutiveLosses;
         }
         balanceHistory.push(balance);
+        playedRounds++;
     }
 
     return {
-        totalRounds: rounds, wins, losses, totalWagered, totalReturned,
+        totalRounds: playedRounds, wins, losses, totalWagered, totalReturned,
         netProfit: totalReturned - totalWagered,
         rtp: totalWagered > 0 ? (totalReturned / totalWagered) * 100 : 0,
         maxConsecutiveWins, maxConsecutiveLosses, balanceHistory, resultDistribution,

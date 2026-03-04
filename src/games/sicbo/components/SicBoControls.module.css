@@ -223,3 +223,85 @@
     opacity: 0.5;
     cursor: not-allowed;
 }
+
+@media (max-width: 768px) {
+    .statsRow {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .controlsContainer {
+        position: sticky;
+        bottom: 0;
+        z-index: 50;
+        padding: 15px;
+        padding-bottom: calc(15px + env(safe-area-inset-bottom, 10px));
+        border-radius: 20px 20px 0 0;
+        background: rgba(10, 14, 26, 0.95);
+        backdrop-filter: blur(10px);
+        margin: 0 -10px;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .chipsRow {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 15px;
+        margin-left: -5px;
+        margin-right: -5px;
+        padding-left: 10px;
+        padding-right: 10px;
+        gap: 12px;
+        scrollbar-width: none;
+    }
+
+    .chipsRow::-webkit-scrollbar {
+        display: none;
+    }
+
+    .presetChips {
+        display: flex;
+        gap: 10px;
+        flex-wrap: nowrap;
+    }
+
+    .chip {
+        scroll-snap-align: center;
+        flex: 0 0 auto;
+        width: 44px;
+        height: 44px;
+        font-size: 0.85rem;
+    }
+
+    .chipInput {
+        width: 80px;
+        height: 44px;
+        font-size: 1rem;
+    }
+
+    .mainButtons {
+        flex-direction: row;
+        gap: 10px;
+        width: 100%;
+        margin-top: 5px;
+    }
+
+    .rollBtn,
+    .clearBtn,
+    .resetBtn {
+        flex: 1;
+        padding: 12px 10px;
+        font-size: 1rem;
+    }
+
+    .rollBtn {
+        flex: 1.5;
+    }
+}

@@ -47,6 +47,7 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
     const [mode, setMode] = useState<'GAME' | 'SIMULATION'>('GAME');
     const { gameState, balance, isRolling, lastWin, placeBet, clearBets, roll, resetGame, resetBalance } = useCrapsGame();
     const [selectedChip, setSelectedChip] = useState(100);
+    const [customChip, setCustomChip] = useState('');
     const [showEdu, setShowEdu] = useState(false);
     const [showRules, setShowRules] = useState(false);
 
@@ -56,6 +57,11 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
     const isResult = gameState.phase === 'RESULT';
     const CHIPS = [10, 50, 100, 500, 1000];
     const getBetTotal = (type: string) => gameState.bets.filter(b => b.type === type).reduce((s, b) => s + b.amount, 0);
+    const handleCustomChip = (value: string) => {
+        setCustomChip(value);
+        const parsed = Number.parseInt(value, 10);
+        if (parsed > 0) setSelectedChip(parsed);
+    };
 
     const isComeOut = gameState.roundStatus === 'come_out';
 
@@ -237,8 +243,22 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
                             <div className={styles.chipRow}>
                                 {CHIPS.map(c => (
                                     <button key={c} className={`${styles.chip} ${selectedChip === c ? styles.chipSel : ''}`}
-                                        onClick={() => setSelectedChip(c)}>{c >= 1000 ? `${c / 1000}k` : c}</button>
+                                        onClick={() => {
+                                            setSelectedChip(c);
+                                            setCustomChip('');
+                                        }}>{c >= 1000 ? `${c / 1000}k` : c}</button>
                                 ))}
+                                <div className={styles.customChipInputWrapper}>
+                                    <span className={styles.currencySymbol}>$</span>
+                                    <input
+                                        type="number"
+                                        className={`${styles.chipInput} ${customChip ? styles.activeInput : ''}`}
+                                        placeholder="自定义"
+                                        value={customChip}
+                                        onChange={(e) => handleCustomChip(e.target.value)}
+                                        min={1}
+                                    />
+                                </div>
                             </div>
                             <div className={styles.btnRow}>
                                 {canBet && <>

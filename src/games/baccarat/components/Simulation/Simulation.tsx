@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { runSimulation } from '../../logic/SimulationEngine';
 import type { SimulationResult } from '../../logic/SimulationEngine';
 import { AssetCurve } from '../../../../components/Common/Simulation/AssetCurve';
+import { formatPercent } from '../../../../components/Common/Simulation/stats';
 import { FlatBetStrategy, MartingaleStrategy, AlwaysTieStrategy, RandomStrategy, MartingaleRandomStrategy } from '../../logic/Strategies';
 import styles from '../../../../components/Common/Simulation/Simulation.module.css';
 
@@ -108,15 +109,15 @@ export const Simulation: React.FC = () => {
                     <div className={styles.statsGrid}>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>庄赢 (Banker)</span>
-                            <span className={styles.statValue}>{result.bankerWins} ({((result.bankerWins / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.bankerWins} ({formatPercent(result.bankerWins, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>闲赢 (Player)</span>
-                            <span className={styles.statValue}>{result.playerWins} ({((result.playerWins / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.playerWins} ({formatPercent(result.playerWins, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>和局 (Tie)</span>
-                            <span className={styles.statValue}>{result.ties} ({((result.ties / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.ties} ({formatPercent(result.ties, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>最终余额</span>

@@ -140,3 +140,13 @@
     color: #ffd700;
     margin-top: 2px;
 }
+
+/* ============ 移动端极致体验优化 ============ */
+@media (max-width: 768px) {
+    .bettingTable {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 20px;
+        max-width: 100%;
+    }
+}

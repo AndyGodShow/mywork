@@ -429,6 +429,47 @@
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
+.customChipInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.currencySymbol {
+    position: absolute;
+    left: 12px;
+    color: #ffd700;
+    font-weight: bold;
+    z-index: 1;
+}
+
+.chipInput {
+    width: 108px;
+    height: 48px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 24px;
+    padding: 0 12px 0 25px;
+    color: #fff;
+    font-size: 1rem;
+    font-weight: bold;
+    outline: none;
+    transition: all 0.25s ease;
+    text-align: center;
+}
+
+.chipInput:focus,
+.activeInput {
+    background: rgba(255, 215, 0, 0.1);
+    border-color: #ffd700;
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.2);
+}
+
+.chipInput::placeholder {
+    color: rgba(255, 255, 255, 0.35);
+    font-size: 0.85rem;
+}
+
 /* ========= 按钮行 ========= */
 .btnRow {
     display: flex;
@@ -503,5 +544,74 @@
         width: 42px;
         height: 42px;
         font-size: 0.65rem;
+    }
+
+    .statsRow {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 5px;
+    }
+
+    .controls {
+        position: sticky;
+        bottom: 0;
+        z-index: 50;
+        padding: 15px;
+        padding-bottom: calc(15px + env(safe-area-inset-bottom, 10px));
+        border-radius: 20px 20px 0 0;
+        background: rgba(10, 14, 26, 0.95);
+        backdrop-filter: blur(10px);
+        margin: 0 -10px;
+        box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.5);
+    }
+
+    .chipRow {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        padding-bottom: 10px;
+        margin-bottom: 5px;
+        scrollbar-width: none;
+    }
+
+    .chipRow::-webkit-scrollbar {
+        display: none;
+    }
+
+    .chip {
+        flex: 0 0 auto;
+        scroll-snap-align: start;
+        width: 44px;
+        height: 44px;
+        font-size: 0.85rem;
+    }
+
+    .chipInput {
+        width: 95px;
+        height: 44px;
+        font-size: 0.9rem;
+    }
+
+    .btnRow {
+        flex-direction: row;
+        gap: 10px;
+        width: 100%;
+    }
+
+    .rollBtn,
+    .clearBtn,
+    .resetBtn {
+        flex: 1;
+        padding: 12px 10px;
+        font-size: 1rem;
+    }
+
+    .rollBtn {
+        flex: 1.5;
     }
 }

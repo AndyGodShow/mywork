@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useRouletteGame } from './hooks/useRouletteGame';
 import { RouletteWheel } from './components/RouletteWheel';
 import { RouletteTable } from './components/RouletteTable';
@@ -63,14 +63,14 @@ export const RouletteGame: React.FC<RouletteGameProps> = ({ onBackToLobby }) => 
 
     const totalBet = gameState.bets.reduce((sum, b) => sum + b.amount, 0);
 
-    const handleSpin = () => {
+    const handleSpin = useCallback(() => {
         setShowWheel(true);
         spin();
-    };
+    }, [spin]);
 
-    const handleWheelComplete = () => {
+    const handleWheelComplete = useCallback(() => {
         setShowWheel(false);
-    };
+    }, []);
 
     return (
         <div className="game-container">

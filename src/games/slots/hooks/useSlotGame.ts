@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
+import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { SlotPhase, PAYLINES } from '../types';
 import type { SlotGameState } from '../types';
 import { generateReels, evaluateSpin } from '../logic/SlotEngine';
@@ -8,7 +9,7 @@ const SPIN_DURATION_MS = 2400; // 延长以配合卷轴依次停止动画
 const AUTO_RETURN_DELAY_MS = 2200; // 结果阶段后自动回到下注
 
 export const useSlotGame = () => {
-    const [balance, setBalance] = useState(INITIAL_BALANCE);
+    const { balance, setBalance, resetBalance } = usePersistedBalance('slots', INITIAL_BALANCE);
     const [gameState, setGameState] = useState<SlotGameState>({
         phase: SlotPhase.Betting,
         reels: generateReels(),
@@ -79,7 +80,7 @@ export const useSlotGame = () => {
                 ? `赢得 $${result.totalWin.toLocaleString()}`
                 : '未中奖',
         }));
-    }, [gameState.phase, gameState.betPerLine, gameState.activeLines, balance]);
+    }, [gameState.phase, gameState.betPerLine, gameState.activeLines, balance, setBalance]);
 
     // 结果阶段自动回到下注
     useEffect(() => {
@@ -163,11 +164,9 @@ export const useSlotGame = () => {
             history: [],
             message: '选择下注金额，点击旋转开始',
         });
-    }, [stopAutoSpin]);
+    }, [stopAutoSpin, setBalance]);
 
-    const resetBalance = useCallback(() => {
-        setBalance(INITIAL_BALANCE);
-    }, []);
+    // resetBalance provided by usePersistedBalance
 
     return {
         gameState,

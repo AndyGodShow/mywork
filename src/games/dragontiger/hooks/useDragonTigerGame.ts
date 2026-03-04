@@ -1,6 +1,7 @@
 // ===== 龙虎斗游戏 Hook =====
 
 import { useState, useCallback } from 'react';
+import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { DragonTigerPhase } from '../types';
 import type { DragonTigerGameState, DragonTigerBetType } from '../types';
 import { createShuffledDeck, determineResult, calculatePayout, getResultName } from '../logic/DragonTigerEngine';
@@ -9,7 +10,7 @@ const INITIAL_BALANCE = 10000;
 const DEAL_DURATION_MS = 1500;
 
 export const useDragonTigerGame = () => {
-    const [balance, setBalance] = useState(INITIAL_BALANCE);
+    const { balance, setBalance, resetBalance } = usePersistedBalance('dragontiger', INITIAL_BALANCE);
     const [gameState, setGameState] = useState<DragonTigerGameState>({
         phase: DragonTigerPhase.Betting,
         bets: [],
@@ -22,7 +23,7 @@ export const useDragonTigerGame = () => {
 
     const placeBet = (type: DragonTigerBetType, amount: number) => {
         if (gameState.phase !== DragonTigerPhase.Betting) return;
-        if (amount > balance) return;
+        if (!Number.isFinite(amount) || amount <= 0 || amount > balance) return;
         setBalance(prev => prev - amount);
         setGameState(prev => ({
             ...prev,
@@ -70,7 +71,7 @@ export const useDragonTigerGame = () => {
             history: [result, ...prev.history].slice(0, 20),
             message: `${getResultName(result)}赢！${totalWin > 0 ? `赢得: $${totalWin}` : '未中奖'}`,
         }));
-    }, [gameState.bets, gameState.phase]);
+    }, [gameState.bets, gameState.phase, setBalance]);
 
     const resetGame = () => {
         setGameState(prev => ({
@@ -84,7 +85,7 @@ export const useDragonTigerGame = () => {
         }));
     };
 
-    const resetBalance = () => setBalance(INITIAL_BALANCE);
+    // resetBalance provided by usePersistedBalance
 
     return { gameState, balance, placeBet, clearBets, deal, resetGame, resetBalance };
 };

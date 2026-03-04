@@ -28,6 +28,7 @@ export const runBlackjackSimulation = (
 ): BlackjackSimulationResult => {
     const deck = new Deck(8);
     let balance = initialBalance;
+    let playedRounds = 0;
     strategy.reset();
 
     let playerWins = 0;
@@ -48,6 +49,7 @@ export const runBlackjackSimulation = (
         }
 
         const bet = strategy.getBet(balance, lastResult);
+        if (bet <= 0 || bet > balance) break;
         balance -= bet;
 
         // Deal
@@ -146,10 +148,11 @@ export const runBlackjackSimulation = (
         }
 
         balanceHistory.push(balance);
+        playedRounds++;
     }
 
     return {
-        totalRounds: rounds,
+        totalRounds: playedRounds,
         playerWins,
         dealerWins,
         pushes,

@@ -29,6 +29,7 @@ export const runCrapsSimulation = (config: CrapsSimulationConfig): CrapsSimulati
     const { rounds, initialBalance, bets, useMartingale = false } = config;
 
     let balance = initialBalance;
+    let playedRounds = 0;
     let wins = 0, losses = 0;
     let totalWagered = 0, totalReturned = 0;
     let consecutiveLosses = 0, maxConsecutiveLosses = 0;
@@ -40,6 +41,15 @@ export const runCrapsSimulation = (config: CrapsSimulationConfig): CrapsSimulati
     for (let i = 2; i <= 12; i++) sumDistribution[i] = 0;
 
     for (let i = 0; i < rounds; i++) {
+        if (balance <= 0) break;
+
+        const scaledBets: CrapsBet[] = bets.map(baseBet => ({
+            ...baseBet,
+            amount: useMartingale ? baseBet.amount * multiplier : baseBet.amount,
+        }));
+        const hasAffordableBet = scaledBets.some(bet => bet.amount > 0 && bet.amount <= balance);
+        if (!hasAffordableBet) break;
+
         // Come Out Roll
         const comeOutDice = rollCrapsDice();
         const comeOutSum = getDiceSum(comeOutDice);
@@ -49,8 +59,7 @@ export const runCrapsSimulation = (config: CrapsSimulationConfig): CrapsSimulati
         let roundWagered = 0, roundReturned = 0;
 
         // 结算单轮下注 (field, any_seven, any_craps)
-        for (const baseBet of bets) {
-            const bet: CrapsBet = { ...baseBet, amount: useMartingale ? baseBet.amount * multiplier : baseBet.amount };
+        for (const bet of scaledBets) {
             if (bet.amount > balance) continue;
 
             if (bet.type === 'field' || bet.type === 'any_seven' || bet.type === 'any_craps') {
@@ -112,25 +121,28 @@ export const runCrapsSimulation = (config: CrapsSimulationConfig): CrapsSimulati
 
         totalWagered += roundWagered;
         totalReturned += roundReturned;
+        if (roundWagered === 0) break;
 
-        if (roundReturned > roundWagered) {
+        const roundProfit = roundReturned - roundWagered;
+
+        if (roundProfit > 0) {
             wins++; consecutiveLosses = 0;
             consecutiveWins++;
             if (consecutiveWins > maxConsecutiveWins) maxConsecutiveWins = consecutiveWins;
-            const roundProfit = roundReturned - roundWagered;
             if (roundProfit > maxWin) maxWin = roundProfit;
             if (useMartingale) multiplier = 1;
-        } else {
+        } else if (roundProfit < 0) {
             losses++; consecutiveWins = 0;
             consecutiveLosses++;
             if (useMartingale) multiplier *= 2;
             if (consecutiveLosses > maxConsecutiveLosses) maxConsecutiveLosses = consecutiveLosses;
         }
         balanceHistory.push(balance);
+        playedRounds++;
     }
 
     return {
-        totalRounds: rounds, wins, losses, totalWagered, totalReturned,
+        totalRounds: playedRounds, wins, losses, totalWagered, totalReturned,
         netProfit: totalReturned - totalWagered,
         rtp: totalWagered > 0 ? (totalReturned / totalWagered) * 100 : 0,
         maxWin, maxConsecutiveWins, maxConsecutiveLosses, balanceHistory, sumDistribution,

@@ -5,6 +5,7 @@ import { ALL_CRAPS_STRATEGIES } from '../logic/CrapsStrategies';
 import { runCrapsSimulation } from '../logic/CrapsSimulationEngine';
 import type { CrapsSimulationResult } from '../logic/CrapsSimulationEngine';
 import { AssetCurve } from '../../../components/Common/Simulation/AssetCurve';
+import { formatPercent } from '../../../components/Common/Simulation/stats';
 import styles from '../../../components/Common/Simulation/Simulation.module.css';
 
 export const CrapsSimulationPanel: React.FC = () => {
@@ -88,7 +89,7 @@ export const CrapsSimulationPanel: React.FC = () => {
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>胜率</span>
                             <span className={styles.statValue}>
-                                {((result.wins / result.totalRounds) * 100).toFixed(2)}%
+                                {formatPercent(result.wins, result.totalRounds)}%
                             </span>
                         </div>
                         <div className={styles.statBox}>

@@ -52,6 +52,27 @@
 @media (max-width: 768px) {
     .games-grid {
         grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .game-card {
+        padding: 16px 20px;
+        border-radius: 12px;
+        gap: 15px;
+    }
+
+    .game-icon {
+        font-size: 3rem;
+        margin-bottom: 0px;
+    }
+
+    .game-info h3 {
+        font-size: 1.25rem;
+        margin-bottom: 6px;
+    }
+
+    .lobby-header h1 {
+        font-size: 2rem;
     }
 }
 

@@ -348,3 +348,83 @@
     justify-content: center;
     margin-top: 10px;
 }
+
+/* ============ 移动端极致体验优化 ============ */
+@media (max-width: 768px) {
+    .controlsContainer {
+        padding: 15px;
+        padding-bottom: 90px;
+        border-radius: 16px;
+    }
+
+    .chipSelector {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+        /* 防止划出边缘触发浏览器返回 */
+        padding-bottom: 15px;
+        margin-left: -5px;
+        margin-right: -5px;
+        padding-left: 10px;
+        padding-right: 10px;
+        gap: 15px;
+    }
+
+    .chipSelector::-webkit-scrollbar {
+        display: none;
+    }
+
+    .chip {
+        scroll-snap-align: center;
+        flex-shrink: 0;
+        width: 55px;
+        height: 55px;
+    }
+
+    .chip::after {
+        width: 40px;
+        height: 40px;
+    }
+
+    /* 沉浸式固定操作栏 */
+    .actionRow,
+    .resultControls {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        margin-top: 0;
+        padding: 15px 20px;
+        padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+        background: rgba(14, 26, 42, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+    }
+
+    .betActionsRow {
+        gap: 6px;
+    }
+
+    .betBtn {
+        min-width: 0;
+        padding: 8px 2px;
+        font-size: 0.85rem;
+    }
+
+    .sideBetBtn {
+        font-size: 0.70rem;
+    }
+
+    .odds {
+        font-size: 0.65rem;
+    }
+}

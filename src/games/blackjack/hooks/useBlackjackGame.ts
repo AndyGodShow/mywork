@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from 'react';
+import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { Card } from '../../../logic/Card';
 import { Deck } from '../../../logic/Deck';
 import {
@@ -15,7 +16,7 @@ const DEAL_DELAY_MS = 800;
 
 export const useBlackjackGame = () => {
     const deckRef = useRef<Deck>(new Deck(6));
-    const [balance, setBalance] = useState(INITIAL_BALANCE);
+    const { balance, setBalance, resetBalance } = usePersistedBalance('blackjack', INITIAL_BALANCE);
     const [gameState, setGameState] = useState<BlackjackGameState>({
         phase: BlackjackPhase.Betting,
         playerHands: [{ cards: [], score: 0, bet: 0, isBust: false, isStay: false, status: 'active' }],
@@ -37,7 +38,7 @@ export const useBlackjackGame = () => {
 
     const placeBet = (amount: number) => {
         if (gameState.phase !== BlackjackPhase.Betting) return;
-        if (amount > balance) return;
+        if (!Number.isFinite(amount) || amount <= 0 || amount > balance) return;
 
         setBalance(prev => prev - amount);
         setGameState(prev => ({
@@ -47,9 +48,14 @@ export const useBlackjackGame = () => {
         }));
     };
 
-    const deal = async () => {
+    const deal = () => {
         const bet = gameState.playerHands[0].bet;
         if (bet === 0) return;
+
+        const p1 = drawCard();
+        const d1 = drawCard();
+        const p2 = drawCard();
+        const d2 = drawCard();
 
         setGameState(prev => ({
             ...prev,
@@ -57,75 +63,81 @@ export const useBlackjackGame = () => {
             message: '正在发牌...',
         }));
 
-        const p1 = drawCard();
-        const d1 = drawCard();
-        const p2 = drawCard();
-        const d2 = drawCard();
+        setTimeout(() => {
+            const initialPlayerCards = [p1, p2];
+            const initialDealerCards = [d1, d2];
+            const pScore = calculateScore(initialPlayerCards).score;
+            const dScore = calculateScore(initialDealerCards).score;
 
-        await new Promise(r => setTimeout(r, DEAL_DELAY_MS));
+            const playerIsBJ = isBlackjack(initialPlayerCards);
+            const dealerIsBJ = isBlackjack(initialDealerCards);
 
-        const initialPlayerCards = [p1, p2];
-        const initialDealerCards = [d1, d2];
-        const pScore = calculateScore(initialPlayerCards).score;
-        const dScore = calculateScore(initialDealerCards).score;
+            setGameState(prev => ({
+                ...prev,
+                playerHands: [{
+                    ...prev.playerHands[0],
+                    cards: initialPlayerCards,
+                    score: pScore,
+                    status: playerIsBJ ? 'blackjack' : 'active'
+                }],
+                dealerHand: {
+                    ...prev.dealerHand,
+                    cards: initialDealerCards,
+                    score: dScore,
+                    status: dealerIsBJ ? 'blackjack' : 'active'
+                },
+                message: playerIsBJ ? '恭喜！Blackjack！' : '您的回合',
+                deckRemaining: deckRef.current.remaining
+            }));
 
-        const playerIsBJ = isBlackjack(initialPlayerCards);
-        const dealerIsBJ = isBlackjack(initialDealerCards);
-
-        setGameState(prev => ({
-            ...prev,
-            playerHands: [{
-                ...prev.playerHands[0],
-                cards: initialPlayerCards,
-                score: pScore,
-                status: playerIsBJ ? 'blackjack' : 'active'
-            }],
-            dealerHand: {
-                ...prev.dealerHand,
-                cards: initialDealerCards,
-                score: dScore,
-                status: dealerIsBJ ? 'blackjack' : 'active'
-            },
-            message: playerIsBJ ? '恭喜！Blackjack！' : '您的回合',
-            deckRemaining: deckRef.current.remaining
-        }));
-
-        if (playerIsBJ || dealerIsBJ) {
-            finalizeRound(playerIsBJ, dealerIsBJ, pScore, dScore);
-        }
+            if (playerIsBJ || dealerIsBJ) {
+                finalizeRound(playerIsBJ, dealerIsBJ, pScore, dScore);
+            }
+        }, DEAL_DELAY_MS);
     };
 
-    const hit = async () => {
+    const hit = () => {
         if (gameState.phase !== BlackjackPhase.PlayerTurn) return;
 
-        const newHand = [...gameState.playerHands];
-        const currentHand = newHand[gameState.currentHandIndex];
         const card = drawCard();
-        currentHand.cards.push(card);
-        currentHand.score = calculateScore(currentHand.cards).score;
 
-        if (isBust(currentHand.cards)) {
-            currentHand.status = 'bust';
-            currentHand.isBust = true;
-            setGameState(prev => ({
+        setGameState(prev => {
+            const currentHand = { ...prev.playerHands[prev.currentHandIndex] };
+            const newCards = [...currentHand.cards, card];
+            const newScore = calculateScore(newCards).score;
+            const bust = isBust(newCards);
+
+            const updatedHand = {
+                ...currentHand,
+                cards: newCards,
+                score: newScore,
+                status: bust ? 'bust' as const : currentHand.status,
+                isBust: bust,
+            };
+
+            const newHands = [...prev.playerHands];
+            newHands[prev.currentHandIndex] = updatedHand;
+
+            if (bust) {
+                // Schedule finalizeRound outside setState
+                setTimeout(() => finalizeRound(false, false, newScore, prev.dealerHand.score), 0);
+            }
+
+            return {
                 ...prev,
-                playerHands: newHand,
-                message: '爆牌了！',
-                deckRemaining: deckRef.current.remaining
-            }));
-            finalizeRound(false, false, currentHand.score, gameState.dealerHand.score);
-        } else {
-            setGameState(prev => ({
-                ...prev,
-                playerHands: newHand,
-                message: `当前点数: ${currentHand.score}`,
-                deckRemaining: deckRef.current.remaining
-            }));
-        }
+                playerHands: newHands,
+                message: bust ? '爆牌了！' : `当前点数: ${newScore}`,
+                deckRemaining: deckRef.current.remaining,
+            };
+        });
     };
 
-    const stand = async () => {
+    const stand = () => {
         if (gameState.phase !== BlackjackPhase.PlayerTurn) return;
+
+        // Snapshot player score BEFORE async dealer turn
+        const playerScore = gameState.playerHands[0].score;
+        const dealerCardsArray = [...gameState.dealerHand.cards];
 
         setGameState(prev => ({
             ...prev,
@@ -133,12 +145,9 @@ export const useBlackjackGame = () => {
             message: '庄家回合...',
         }));
 
-        // Dealer Turn Logic
-        const dealerCardsArray = [...gameState.dealerHand.cards];
-
-        const processDealerTurn = async () => {
-            while (shouldDealerHit(dealerCardsArray)) {
-                await new Promise(r => setTimeout(r, DEAL_DELAY_MS));
+        // Dealer draws sequentially with setTimeout chain
+        const processDealerStep = () => {
+            if (shouldDealerHit(dealerCardsArray)) {
                 const newCard = drawCard();
                 dealerCardsArray.push(newCard);
                 const currentScore = calculateScore(dealerCardsArray).score;
@@ -147,12 +156,14 @@ export const useBlackjackGame = () => {
                     dealerHand: { ...prev.dealerHand, cards: [...dealerCardsArray], score: currentScore },
                     deckRemaining: deckRef.current.remaining
                 }));
+                setTimeout(processDealerStep, DEAL_DELAY_MS);
+            } else {
+                const finalScore = calculateScore(dealerCardsArray).score;
+                finalizeRound(false, false, playerScore, finalScore, [...dealerCardsArray]);
             }
-            const finalScore = calculateScore(dealerCardsArray).score;
-            finalizeRound(false, false, gameState.playerHands[0].score, finalScore, [...dealerCardsArray]);
         };
 
-        await processDealerTurn();
+        setTimeout(processDealerStep, DEAL_DELAY_MS);
     };
 
     const finalizeRound = (pBJ: boolean, dBJ: boolean, pScore: number, dScore: number, finalDealerCards?: Card[]) => {
@@ -211,9 +222,7 @@ export const useBlackjackGame = () => {
         }));
     };
 
-    const resetBalance = useCallback(() => {
-        setBalance(INITIAL_BALANCE);
-    }, []);
+    // resetBalance provided by usePersistedBalance
 
     return {
         gameState,

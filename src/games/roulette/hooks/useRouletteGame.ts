@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { RoulettePhase } from '../types';
 import type { RouletteGameState, RouletteBetType } from '../types';
 import { calculateRoulettePayout } from '../logic/RouletteEngine';
@@ -8,7 +9,7 @@ const INITIAL_BALANCE = 10000;
 const SPIN_DURATION_MS = 4200;
 
 export const useRouletteGame = () => {
-    const [balance, setBalance] = useState(INITIAL_BALANCE);
+    const { balance, setBalance, resetBalance } = usePersistedBalance('roulette', INITIAL_BALANCE);
     const [spinResult, setSpinResult] = useState<number | null>(null);
     const [gameState, setGameState] = useState<RouletteGameState>({
         phase: RoulettePhase.Betting,
@@ -20,7 +21,7 @@ export const useRouletteGame = () => {
 
     const placeBet = (type: RouletteBetType, amount: number, value?: number) => {
         if (gameState.phase !== RoulettePhase.Betting) return;
-        if (amount > balance) return;
+        if (!Number.isFinite(amount) || amount <= 0 || amount > balance) return;
 
         setBalance(prev => prev - amount);
         setGameState(prev => ({
@@ -39,11 +40,14 @@ export const useRouletteGame = () => {
         }));
     };
 
-    const spin = useCallback(async () => {
+    const spin = useCallback(() => {
         if (gameState.phase !== RoulettePhase.Betting || gameState.bets.length === 0) return;
 
         // Generate result BEFORE animation starts so wheel knows where to land
         const resultNum = getSecureRandomInt(37);
+        // Capture current bets before transitioning to spinning phase
+        const currentBets = [...gameState.bets];
+
         setSpinResult(resultNum);
 
         setGameState(prev => ({
@@ -52,23 +56,23 @@ export const useRouletteGame = () => {
             message: '轮盘正在旋转...',
         }));
 
-        // Wait for wheel animation to finish
-        await new Promise(r => setTimeout(r, SPIN_DURATION_MS));
+        // Wait for wheel animation to finish, then calculate payouts
+        setTimeout(() => {
+            let totalWin = 0;
+            currentBets.forEach(bet => {
+                totalWin += calculateRoulettePayout(bet, resultNum);
+            });
 
-        let totalWin = 0;
-        gameState.bets.forEach(bet => {
-            totalWin += calculateRoulettePayout(bet, resultNum);
-        });
-
-        setBalance(prev => prev + totalWin);
-        setGameState(prev => ({
-            ...prev,
-            phase: RoulettePhase.Result,
-            lastNumber: resultNum,
-            history: [resultNum, ...prev.history].slice(0, 10),
-            message: `结果是 ${resultNum}。赢得: $${totalWin}`,
-        }));
-    }, [gameState.bets, gameState.phase]);
+            setBalance(prev => prev + totalWin);
+            setGameState(prev => ({
+                ...prev,
+                phase: RoulettePhase.Result,
+                lastNumber: resultNum,
+                history: [resultNum, ...prev.history].slice(0, 10),
+                message: `结果是 ${resultNum}。赢得: $${totalWin}`,
+            }));
+        }, SPIN_DURATION_MS);
+    }, [gameState.bets, gameState.phase, setBalance]);
 
     const resetGame = () => {
         setSpinResult(null);
@@ -80,9 +84,7 @@ export const useRouletteGame = () => {
         }));
     };
 
-    const resetBalance = () => {
-        setBalance(INITIAL_BALANCE);
-    };
+    // resetBalance provided by usePersistedBalance
 
     return {
         gameState,
@@ -95,4 +97,3 @@ export const useRouletteGame = () => {
         resetBalance,
     };
 };
-

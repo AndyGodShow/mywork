@@ -5,6 +5,7 @@ import { ALL_DT_STRATEGIES } from '../logic/DragonTigerStrategies';
 import { runDragonTigerSimulation } from '../logic/DragonTigerSimulationEngine';
 import type { DTSimulationResult } from '../logic/DragonTigerSimulationEngine';
 import { AssetCurve } from '../../../components/Common/Simulation/AssetCurve';
+import { formatPercent } from '../../../components/Common/Simulation/stats';
 import styles from '../../../components/Common/Simulation/Simulation.module.css';
 
 export const DTSimulation: React.FC = () => {
@@ -88,19 +89,19 @@ export const DTSimulation: React.FC = () => {
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>龙赢 (Dragon)</span>
                             <span className={styles.statValue}>
-                                {result.resultDistribution.dragon} ({((result.resultDistribution.dragon / result.totalRounds) * 100).toFixed(2)}%)
+                                {result.resultDistribution.dragon} ({formatPercent(result.resultDistribution.dragon, result.totalRounds)}%)
                             </span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>虎赢 (Tiger)</span>
                             <span className={styles.statValue}>
-                                {result.resultDistribution.tiger} ({((result.resultDistribution.tiger / result.totalRounds) * 100).toFixed(2)}%)
+                                {result.resultDistribution.tiger} ({formatPercent(result.resultDistribution.tiger, result.totalRounds)}%)
                             </span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>和局 (Tie)</span>
                             <span className={styles.statValue}>
-                                {result.resultDistribution.tie} ({((result.resultDistribution.tie / result.totalRounds) * 100).toFixed(2)}%)
+                                {result.resultDistribution.tie} ({formatPercent(result.resultDistribution.tie, result.totalRounds)}%)
                             </span>
                         </div>
                         <div className={styles.statBox}>

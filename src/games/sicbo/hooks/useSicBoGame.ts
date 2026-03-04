@@ -1,6 +1,7 @@
 // ===== 骰宝游戏状态 Hook =====
 
 import { useState, useCallback } from 'react';
+import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { SicBoPhase } from '../types';
 import type { SicBoGameState, SicBoBetType, DiceResult } from '../types';
 import { rollDice, calculatePayout } from '../logic/SicBoEngine';
@@ -9,7 +10,7 @@ const INITIAL_BALANCE = 10000;
 const ROLL_DURATION_MS = 2000;
 
 export const useSicBoGame = () => {
-    const [balance, setBalance] = useState(INITIAL_BALANCE);
+    const { balance, setBalance, resetBalance } = usePersistedBalance('sicbo', INITIAL_BALANCE);
     const [diceResult, setDiceResult] = useState<DiceResult | null>(null);
     const [gameState, setGameState] = useState<SicBoGameState>({
         phase: SicBoPhase.Betting,
@@ -21,7 +22,7 @@ export const useSicBoGame = () => {
 
     const placeBet = (type: SicBoBetType, amount: number, value?: number) => {
         if (gameState.phase !== SicBoPhase.Betting) return;
-        if (amount > balance) return;
+        if (!Number.isFinite(amount) || amount <= 0 || amount > balance) return;
 
         setBalance(prev => prev - amount);
         setGameState(prev => ({
@@ -40,11 +41,14 @@ export const useSicBoGame = () => {
         }));
     };
 
-    const roll = useCallback(async () => {
+    const roll = useCallback(() => {
         if (gameState.phase !== SicBoPhase.Betting || gameState.bets.length === 0) return;
 
         // 生成骰子结果
         const dice = rollDice();
+        // 快照当前下注，避免闭包过期
+        const currentBets = [...gameState.bets];
+
         setDiceResult(dice);
 
         setGameState(prev => ({
@@ -53,26 +57,25 @@ export const useSicBoGame = () => {
             message: '骰子正在摇动...',
         }));
 
-        // 等待动画完成
-        await new Promise(r => setTimeout(r, ROLL_DURATION_MS));
+        // 等待动画完成后计算赔付
+        setTimeout(() => {
+            let totalWin = 0;
+            currentBets.forEach(bet => {
+                totalWin += calculatePayout(bet, dice);
+            });
 
-        // 计算赔付
-        let totalWin = 0;
-        gameState.bets.forEach(bet => {
-            totalWin += calculatePayout(bet, dice);
-        });
+            setBalance(prev => prev + totalWin);
 
-        setBalance(prev => prev + totalWin);
-
-        const sum = dice[0] + dice[1] + dice[2];
-        setGameState(prev => ({
-            ...prev,
-            phase: SicBoPhase.Result,
-            dice,
-            history: [dice, ...prev.history].slice(0, 20),
-            message: `骰子: ${dice.join(', ')} | 总和: ${sum} | ${totalWin > 0 ? `赢得: $${totalWin}` : '未中奖'}`,
-        }));
-    }, [gameState.bets, gameState.phase]);
+            const sum = dice[0] + dice[1] + dice[2];
+            setGameState(prev => ({
+                ...prev,
+                phase: SicBoPhase.Result,
+                dice,
+                history: [dice, ...prev.history].slice(0, 20),
+                message: `骰子: ${dice.join(', ')} | 总和: ${sum} | ${totalWin > 0 ? `赢得: $${totalWin}` : '未中奖'}`,
+            }));
+        }, ROLL_DURATION_MS);
+    }, [gameState.bets, gameState.phase, setBalance]);
 
     const resetGame = () => {
         setDiceResult(null);
@@ -85,9 +88,7 @@ export const useSicBoGame = () => {
         }));
     };
 
-    const resetBalance = () => {
-        setBalance(INITIAL_BALANCE);
-    };
+    // resetBalance provided by usePersistedBalance
 
     return {
         gameState,

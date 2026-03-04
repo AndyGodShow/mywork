@@ -56,6 +56,7 @@ export const runSicBoSimulation = (config: SicBoSimulationConfig): SicBoSimulati
     let consecutiveWins = 0;
     let maxConsecutiveWins = 0;
     let currentMultiplier = 1;
+    let playedRounds = 0;
 
     const balanceHistory: number[] = [balance];
     const betTypeStats: Record<string, { wins: number; total: number; profit: number }> = {};
@@ -70,6 +71,13 @@ export const runSicBoSimulation = (config: SicBoSimulationConfig): SicBoSimulati
         // 检查止损/止盈
         if (balance <= stopLoss || balance >= stopWin) break;
 
+        const scaledBets: SicBoBet[] = bets.map(baseBet => ({
+            ...baseBet,
+            amount: useMartingale ? baseBet.amount * currentMultiplier : baseBet.amount,
+        }));
+        const hasAffordableBet = scaledBets.some(bet => bet.amount > 0 && bet.amount <= balance);
+        if (!hasAffordableBet) break;
+
         const dice: DiceResult = rollDice();
         const sum = getDiceSum(dice);
         sumDistribution[sum] = (sumDistribution[sum] || 0) + 1;
@@ -77,12 +85,7 @@ export const runSicBoSimulation = (config: SicBoSimulationConfig): SicBoSimulati
         let roundWagered = 0;
         let roundReturned = 0;
 
-        for (const baseBet of bets) {
-            const bet: SicBoBet = {
-                ...baseBet,
-                amount: useMartingale ? baseBet.amount * currentMultiplier : baseBet.amount,
-            };
-
+        for (const bet of scaledBets) {
             // 检查余额是否足够
             if (bet.amount > balance) continue;
 
@@ -107,6 +110,7 @@ export const runSicBoSimulation = (config: SicBoSimulationConfig): SicBoSimulati
 
         totalWagered += roundWagered;
         totalReturned += roundReturned;
+        if (roundWagered === 0) break;
 
         const roundProfit = roundReturned - roundWagered;
 
@@ -117,7 +121,7 @@ export const runSicBoSimulation = (config: SicBoSimulationConfig): SicBoSimulati
             if (consecutiveWins > maxConsecutiveWins) maxConsecutiveWins = consecutiveWins;
             if (useMartingale) currentMultiplier = 1;
             if (roundProfit > maxWin) maxWin = roundProfit;
-        } else {
+        } else if (roundProfit < 0) {
             losses++;
             consecutiveWins = 0;
             consecutiveLosses++;
@@ -129,10 +133,11 @@ export const runSicBoSimulation = (config: SicBoSimulationConfig): SicBoSimulati
         }
 
         balanceHistory.push(balance);
+        playedRounds++;
     }
 
     return {
-        totalRounds: balanceHistory.length - 1,
+        totalRounds: playedRounds,
         wins,
         losses,
         totalWagered,

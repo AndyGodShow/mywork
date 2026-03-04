@@ -216,3 +216,103 @@
     flex-wrap: wrap;
     overflow-x: auto;
 }
+
+/* ============ 移动端极致体验优化 ============ */
+@media (max-width: 768px) {
+    .table {
+        padding: 15px;
+        border-radius: 20px;
+        min-height: auto;
+    }
+
+    .playArea {
+        flex-direction: column;
+        /* 垂直堆叠 */
+        gap: 15px;
+    }
+
+    .zone {
+        min-height: 140px;
+        padding: 15px;
+    }
+
+    .zoneHeader {
+        margin-bottom: 15px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .score {
+        font-size: 2rem;
+    }
+
+    /* 重叠紧凑型牌桌 */
+    .cardsContainer {
+        gap: 0;
+        justify-content: flex-start;
+        padding-left: 10px;
+    }
+
+    .cardsContainer>*+* {
+        margin-left: -35px;
+        /* 使卡牌紧凑重叠 */
+    }
+
+    .cardAnim {
+        position: relative;
+    }
+
+    .cardsContainer>*:nth-child(1) {
+        z-index: 1;
+    }
+
+    .cardsContainer>*:nth-child(2) {
+        z-index: 2;
+    }
+
+    .cardsContainer>*:nth-child(3) {
+        z-index: 3;
+    }
+
+    .cardsContainer>*:nth-child(4) {
+        z-index: 4;
+    }
+
+    .cardsContainer>*:nth-child(5) {
+        z-index: 5;
+    }
+
+    .cardsContainer>*:nth-child(6) {
+        z-index: 6;
+    }
+
+    .centerInfo {
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(to right, transparent, rgba(212, 175, 55, 0.3), transparent);
+        margin: 10px 0;
+    }
+
+    .vsBadge {
+        width: 30px;
+        height: 30px;
+        font-size: 0.9rem;
+    }
+
+    .deckInfo {
+        top: 10px;
+        right: 10px;
+        padding: 6px 10px;
+        font-size: 0.75rem;
+    }
+
+    /* 路单面板折叠化 */
+    .roadmapArea {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+        padding-bottom: 10px;
+    }
+}

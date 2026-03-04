@@ -254,3 +254,71 @@
     cursor: not-allowed;
     filter: grayscale(0.8);
 }
+
+/* ============ 移动端极致体验优化 ============ */
+@media (max-width: 768px) {
+    .controlsContainer {
+        padding: 15px;
+        padding-bottom: 90px;
+        border-radius: 16px;
+    }
+
+    .chips {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scroll-snap-type: x mandatory;
+        overscroll-behavior-x: contain;
+        padding-bottom: 15px;
+        margin-left: -5px;
+        margin-right: -5px;
+        padding-left: 10px;
+        padding-right: 10px;
+        gap: 15px;
+    }
+
+    .chips::-webkit-scrollbar {
+        display: none;
+    }
+
+    .chip {
+        scroll-snap-align: center;
+        flex-shrink: 0;
+        width: 55px;
+        height: 55px;
+    }
+
+    .chip::after {
+        width: 40px;
+        height: 40px;
+    }
+
+    .actionRow {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        margin-top: 0;
+        padding: 15px 20px;
+        padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+        background: rgba(14, 26, 42, 0.85);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        z-index: 1000;
+        box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+        box-sizing: border-box;
+    }
+
+    .playerActions {
+        gap: 10px;
+    }
+
+    .actionBtn {
+        padding: 10px;
+        font-size: 0.9rem;
+    }
+}

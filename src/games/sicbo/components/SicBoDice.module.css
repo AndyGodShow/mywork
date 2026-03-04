@@ -125,3 +125,33 @@
         opacity: 1;
     }
 }
+
+@media (max-width: 768px) {
+    .diceContainer {
+        padding: 15px;
+        gap: 10px;
+    }
+
+    .diceRow {
+        gap: 10px;
+    }
+
+    .die {
+        width: 60px;
+        height: 60px;
+    }
+
+    .dieFace {
+        padding: 8px;
+        gap: 4px;
+    }
+
+    .dotSlot {
+        width: 10px;
+        height: 10px;
+    }
+
+    .sumValue {
+        font-size: 1.4rem;
+    }
+}

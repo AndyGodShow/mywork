@@ -56,8 +56,8 @@ export const BlackjackGame: React.FC<BlackjackGameProps> = ({ onBackToLobby }) =
     const dealerUpcard = gameState.dealerHand.cards[0];
     let hint = '';
     if (gameState.phase === 'PLAYER_TURN' && dealerUpcard) {
-        const { score } = calculateScore(currentHand.cards);
-        const action = getBasicStrategyAction(score, dealerUpcard, currentHand.cards.length);
+        const { score, isSoft } = calculateScore(currentHand.cards);
+        const action = getBasicStrategyAction(score, dealerUpcard, currentHand.cards.length, isSoft, currentHand.cards);
         const actionMap = {
             HIT: '要牌 (Hit)',
             STAND: '停牌 (Stand)',

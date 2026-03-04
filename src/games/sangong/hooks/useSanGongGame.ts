@@ -1,6 +1,7 @@
 // ===== 三公游戏 Hook =====
 
 import { useState, useCallback } from 'react';
+import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { SanGongPhase } from '../types';
 import type { SanGongGameState, SanGongBetType } from '../types';
 import { createDeck, evaluateHand, compareHands, calculatePayout, getResultName } from '../logic/SanGongEngine';
@@ -9,7 +10,7 @@ const INITIAL_BALANCE = 10000;
 const DEAL_DURATION_MS = 1500;
 
 export const useSanGongGame = () => {
-    const [balance, setBalance] = useState(INITIAL_BALANCE);
+    const { balance, setBalance, resetBalance } = usePersistedBalance('sangong', INITIAL_BALANCE);
     const [gameState, setGameState] = useState<SanGongGameState>({
         phase: SanGongPhase.Betting,
         bets: [],
@@ -21,7 +22,8 @@ export const useSanGongGame = () => {
     });
 
     const placeBet = (type: SanGongBetType, amount: number) => {
-        if (gameState.phase !== SanGongPhase.Betting || amount > balance) return;
+        if (gameState.phase !== SanGongPhase.Betting) return;
+        if (!Number.isFinite(amount) || amount <= 0 || amount > balance) return;
         setBalance(prev => prev - amount);
         setGameState(prev => ({ ...prev, bets: [...prev.bets, { type, amount }] }));
     };
@@ -57,7 +59,7 @@ export const useSanGongGame = () => {
             history: [result, ...prev.history].slice(0, 20),
             message: `${getResultName(result)}！闲：${playerHand.handName} vs 庄：${bankerHand.handName}${totalWin > 0 ? ` | 赢得: $${totalWin}` : ' | 未中奖'}`,
         }));
-    }, [gameState.bets, gameState.phase]);
+    }, [gameState.bets, gameState.phase, setBalance]);
 
     const resetGame = () => setGameState(prev => ({
         ...prev, phase: SanGongPhase.Betting, bets: [],
@@ -65,7 +67,7 @@ export const useSanGongGame = () => {
         message: '请选择下注：闲赢、庄赢 或 和局',
     }));
 
-    const resetBalance = () => setBalance(INITIAL_BALANCE);
+    // resetBalance provided by usePersistedBalance
 
     return { gameState, balance, placeBet, clearBets, deal, resetGame, resetBalance };
 };

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { runRouletteSimulation } from '../logic/RouletteSimulationEngine';
 import type { RouletteSimulationResult } from '../logic/RouletteSimulationEngine';
 import { AssetCurve } from '../../../components/Common/Simulation/AssetCurve';
+import { formatPercent } from '../../../components/Common/Simulation/stats';
 import {
     FlatRedStrategy,
     MartingaleRedStrategy,
@@ -93,11 +94,11 @@ export const RouletteSimulation: React.FC = () => {
                     <div className={styles.statsGrid}>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>赢 (Win)</span>
-                            <span className={styles.statValue}>{result.wins} ({((result.wins / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.wins} ({formatPercent(result.wins, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>输 (Loss)</span>
-                            <span className={styles.statValue}>{result.losses} ({((result.losses / result.totalRounds) * 100).toFixed(2)}%)</span>
+                            <span className={styles.statValue}>{result.losses} ({formatPercent(result.losses, result.totalRounds)}%)</span>
                         </div>
                         <div className={styles.statBox}>
                             <span className={styles.statLabel}>最终余额</span>
