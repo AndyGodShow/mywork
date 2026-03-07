@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest run",
-    "deploy": "git add . && git commit -m 'deploy' && git push"
+    "deploy": "bash scripts/deploy.sh"
   },
   "dependencies": {
     "react": "^19.2.0",
