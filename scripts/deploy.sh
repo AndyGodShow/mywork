@@ -2,10 +2,13 @@
 # 开启严苛模式：任何一行命令返回非零（报错）立刻中止脚本
 set -e
 
-echo -e "\n🔍 [质量门禁 1/2] 正在执行严格代码规范检查 (Lint)..."
+echo -e "\n🔍 [质量门禁 1/3] 正在执行严格代码规范检查 (Lint)..."
 npm run lint
 
-echo -e "\n🧪 [质量门禁 2/2] 正在运行核心业务单元测试 (Test)..."
+echo -e "\n🏗️ [质量门禁 2/3] 正在执行 TypeScript 类型深度编译检查 (Type Check)..."
+npx tsc -b
+
+echo -e "\n🧪 [质量门禁 3/3] 正在运行核心业务单元测试 (Test)..."
 npm run test -- --run
 
 # 聚合一切改动 (包括新建的未追踪文件)
@@ -18,7 +21,8 @@ if git diff --staged --quiet; then
 fi
 
 echo -e "\n📦 质量门禁通过，正在打包发布..."
-git commit -m "deploy: $(date +'%Y-%m-%d %H:%M:%S') auto-deploy via script"
+MSG=${1:-"deploy: $(date +'%Y-%m-%d %H:%M:%S') auto-deploy via script"}
+git commit -m "$MSG"
 
 echo -e "\n🚀 正在光速推送至 GitHub 触发 Vercel 自动构建..."
 git push origin main
