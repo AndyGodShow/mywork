@@ -8,15 +8,16 @@ npm run lint
 echo -e "\n🧪 [质量门禁 2/2] 正在运行核心业务单元测试 (Test)..."
 npm run test -- --run
 
-# 检查是否有未保存的改动
-if git diff-index --quiet HEAD --; then
-    echo -e "\n⚡ 检测完毕：当前没有尚未提交的代码改动。系统已受到保护，部署流程终止，防止空气提交浪费云端资源。"
+# 聚合一切改动 (包括新建的未追踪文件)
+git add .
+
+# 检查是否有未保存的改动 (此时检查已暂存的区)
+if git diff --staged --quiet; then
+    echo -e "\n⚡ 检测完毕：当前没有任何实质性代码改动。系统暂未发布，保护云端资源。"
     exit 0
 fi
 
-# 聚合一切改动进行光速提交
-echo -e "\n📦 质量门禁通过，没有任何语法与业务逻辑错误！正在打包发布..."
-git add .
+echo -e "\n📦 质量门禁通过，正在打包发布..."
 git commit -m "deploy: $(date +'%Y-%m-%d %H:%M:%S') auto-deploy via script"
 
 echo -e "\n🚀 正在光速推送至 GitHub 触发 Vercel 自动构建..."
