@@ -306,3 +306,30 @@
         flex: 1.5;
     }
 }
+
+/* ============ PC 端视口适配 ============ */
+@media (min-width: 1024px) and (max-height: 900px) {
+    .controlsContainer {
+        padding: 12px 16px;
+        gap: 12px;
+    }
+
+    .actionRow {
+        gap: 12px;
+    }
+
+    .chipsRow {
+        gap: 14px;
+        margin-bottom: 4px;
+    }
+
+    .chip {
+        width: 42px;
+        height: 42px;
+    }
+
+    .chipInput {
+        height: 42px;
+        width: 90px;
+    }
+}

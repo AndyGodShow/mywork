@@ -104,7 +104,7 @@
 }
 
 .betBtn {
-    padding: 25px 15px;
+    padding: 16px 12px;
     border-radius: 12px;
     border: 2px solid rgba(255, 255, 255, 0.15);
     cursor: pointer;
@@ -463,5 +463,36 @@
 
     .dealBtn {
         flex: 1.5;
+    }
+}
+
+/* ============ PC 端视口适配 ============ */
+@media (min-width: 1024px) and (max-height: 900px) {
+    .layout {
+        gap: 10px;
+    }
+
+    .handsArea {
+        padding: 8px 0;
+        gap: 16px;
+    }
+
+    .card {
+        width: 58px;
+        height: 82px;
+        font-size: 1.2rem;
+    }
+
+    .betBtn {
+        padding: 10px 8px;
+    }
+
+    .betBtnLabel {
+        font-size: 1.3rem;
+    }
+
+    .controls {
+        padding: 10px 14px;
+        gap: 10px;
     }
 }

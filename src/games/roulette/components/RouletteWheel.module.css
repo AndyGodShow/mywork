@@ -261,3 +261,22 @@
         font-size: 1.8rem;
     }
 }
+
+/* ============ PC 端视口适配 ============ */
+@media (min-width: 1024px) and (max-height: 900px) {
+    .wheelFrame {
+        width: 320px;
+        height: 320px;
+    }
+
+    .modal {
+        padding: 16px 28px 20px;
+        gap: 12px;
+    }
+
+    .resultBadge {
+        width: 58px;
+        height: 58px;
+        font-size: 1.9rem;
+    }
+}

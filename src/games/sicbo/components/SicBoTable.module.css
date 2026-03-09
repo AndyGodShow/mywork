@@ -309,3 +309,26 @@
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* ============ PC 端视口适配 ============ */
+@media (min-width: 1024px) and (max-height: 900px) {
+    .tableContainer {
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .betBtn {
+        padding: 12px 8px;
+    }
+
+    .betLabel {
+        font-size: 1.4rem;
+    }
+
+    .totalBtn,
+    .diceBtn,
+    .tripleBtn,
+    .comboBtn {
+        padding: 7px 4px;
+    }
+}

@@ -38,8 +38,8 @@ a:active {
   width: 100vw;
   display: flex;
   flex-direction: column;
-  padding: 20px;
-  padding-bottom: env(safe-area-inset-bottom, 20px);
+  padding: 12px 20px;
+  padding-bottom: env(safe-area-inset-bottom, 12px);
   box-sizing: border-box;
   overflow-x: hidden;
 }
@@ -55,10 +55,10 @@ a:active {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 20px;
+  padding: 8px 16px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .header-left {
@@ -85,7 +85,7 @@ a:active {
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 30px;
+  gap: 16px;
   align-items: center;
   width: 100%;
   max-width: 1200px;
@@ -128,7 +128,7 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
 }
 
 .strategy-hint-banner {
@@ -156,7 +156,7 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 40px;
+  gap: 20px;
 }
 
 /* Slots Layout */
@@ -166,7 +166,7 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
+  gap: 20px;
 }
 
 .result-display {
@@ -225,9 +225,39 @@ a:active {
   text-align: center;
   color: #444;
   font-size: 0.75rem;
-  margin-top: 40px;
+  margin-top: 16px;
   border-top: 1px solid rgba(255, 255, 255, 0.05);
-  padding-top: 20px;
+  padding-top: 10px;
+}
+
+/* ============ PC 端视口适配 ============ */
+/* 宽屏但高度受限时（如 1440×900）进一步压缩间距 */
+@media (min-width: 1024px) and (max-height: 900px) {
+  .app-container {
+    padding: 8px 16px;
+    padding-bottom: 8px;
+  }
+
+  .game-header {
+    padding: 6px 14px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+  }
+
+  .game-area {
+    gap: 10px;
+  }
+
+  .blackjack-layout,
+  .roulette-layout,
+  .slots-layout {
+    gap: 12px;
+  }
+
+  .app-footer {
+    margin-top: 8px;
+    padding-top: 6px;
+  }
 }
 
 @keyframes fadeIn {
