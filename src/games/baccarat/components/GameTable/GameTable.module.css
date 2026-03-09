@@ -320,27 +320,35 @@
 /* ============ PC 端视口适配 ============ */
 @media (min-width: 1024px) and (max-height: 900px) {
     .table {
-        padding: 22px;
+        padding: 16px;
         min-height: auto;
-        border-radius: 24px;
-        gap: 12px;
+        border-radius: 20px;
+        gap: 8px;
     }
 
     .zone {
-        min-height: 200px;
-        padding: 14px;
+        min-height: 150px;
+        padding: 12px;
     }
 
     .zoneHeader {
-        margin-bottom: 14px;
-        gap: 6px;
+        margin-bottom: 8px;
+        gap: 4px;
     }
 
     .score {
-        font-size: 2.2rem;
+        font-size: 1.8rem;
     }
 
     .roadmapArea {
-        margin-top: 10px;
+        margin-top: 6px;
+    }
+
+    .header {
+        margin-bottom: 8px;
+    }
+
+    .statusMessage {
+        font-size: 1.2rem;
     }
 }
