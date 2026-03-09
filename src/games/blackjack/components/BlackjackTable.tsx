@@ -30,6 +30,7 @@ export const BlackjackTable: React.FC<BlackjackTableProps> = ({ gameState }) => 
                                 <Card
                                     card={card}
                                     hidden={phase === 'PLAYER_TURN' && idx === 1}
+                                    dealIndex={idx}
                                 />
                             </div>
                         ))}
@@ -54,7 +55,7 @@ export const BlackjackTable: React.FC<BlackjackTableProps> = ({ gameState }) => 
                     <div className={styles.cardsContainer}>
                         {playerHands[0].cards.map((card, idx) => (
                             <div key={`p-${idx}`} className={styles.cardWrapper}>
-                                <Card card={card} />
+                                <Card card={card} dealIndex={dealerHand.cards.length + idx} />
                             </div>
                         ))}
                     </div>

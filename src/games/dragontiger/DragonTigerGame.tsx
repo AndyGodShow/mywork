@@ -6,6 +6,7 @@ import { getResultName } from './logic/DragonTigerEngine';
 import { DTSimulation } from './components/DTSimulation';
 import { DTRulesModal } from './components/DTRulesModal';
 import { EducationalOverlay } from '../../components/Common/EducationalOverlay';
+import { Card } from '../../components/Card/Card';
 import '../../App.css';
 import styles from './components/DragonTiger.module.css';
 
@@ -53,20 +54,10 @@ export const DragonTigerGame: React.FC<Props> = ({ onBackToLobby }) => {
         if (parsed > 0) setSelectedChip(parsed);
     };
 
-    const renderCard = (card: import('../../logic/Card').Card | null, label: string, side: 'dragon' | 'tiger') => (
+    const renderCard = (card: import('../../logic/Card').Card | null, label: string, side: 'dragon' | 'tiger', idx: number) => (
         <div className={`${styles.cardSide} ${styles[side]}`}>
             <div className={styles.sideLabel}>{label}</div>
-            <div className={`${styles.card} ${card ? styles.revealed : ''}`}>
-                {card ? (
-                    <>
-                        <span className={card.suit === '♥' || card.suit === '♦' ? styles.red : styles.black}>
-                            {card.rank}{card.suit}
-                        </span>
-                    </>
-                ) : (
-                    <span className={styles.cardBack}>🂠</span>
-                )}
-            </div>
+            <Card card={card ?? undefined} hidden={!card} dealIndex={idx} />
         </div>
     );
 
@@ -93,11 +84,11 @@ export const DragonTigerGame: React.FC<Props> = ({ onBackToLobby }) => {
                     <div className={styles.layout}>
                         {/* 牌面区 */}
                         <div className={styles.cardsArea}>
-                            {renderCard(gameState.dragonCard, '龙 Dragon', 'dragon')}
+                            {renderCard(gameState.dragonCard, '龙 Dragon', 'dragon', 0)}
                             <div className={styles.vs}>
                                 {isResult && gameState.result ? getResultName(gameState.result) : 'VS'}
                             </div>
-                            {renderCard(gameState.tigerCard, '虎 Tiger', 'tiger')}
+                            {renderCard(gameState.tigerCard, '虎 Tiger', 'tiger', 1)}
                         </div>
 
                         {/* 信息 */}

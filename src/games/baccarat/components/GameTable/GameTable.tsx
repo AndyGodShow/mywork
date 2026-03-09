@@ -29,7 +29,7 @@ export const GameTable: React.FC<GameTableProps> = ({ gameState, deckRemaining }
                     </div>
                     <div className={styles.cardsContainer}>
                         {gameState.playerHand.map((card, idx) => (
-                            <Card key={`p-${idx}`} card={card} className={styles.cardAnim} />
+                            <Card key={`p-${idx}`} card={card} dealIndex={idx * 2} />
                         ))}
                         {gameState.playerHand.length === 0 && (
                             <div className={styles.placeholder}>等待发牌...</div>
@@ -50,7 +50,7 @@ export const GameTable: React.FC<GameTableProps> = ({ gameState, deckRemaining }
                     </div>
                     <div className={styles.cardsContainer}>
                         {gameState.bankerHand.map((card, idx) => (
-                            <Card key={`b-${idx}`} card={card} className={styles.cardAnim} />
+                            <Card key={`b-${idx}`} card={card} dealIndex={idx * 2 + 1} />
                         ))}
                         {gameState.bankerHand.length === 0 && (
                             <div className={styles.placeholder}>等待发牌...</div>

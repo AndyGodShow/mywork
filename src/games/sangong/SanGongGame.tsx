@@ -6,6 +6,7 @@ import { getResultName } from './logic/SanGongEngine';
 import { SGSimulation } from './components/SGSimulation';
 import { SGRulesModal } from './components/SGRulesModal';
 import { EducationalOverlay } from '../../components/Common/EducationalOverlay';
+import { Card } from '../../components/Card/Card';
 import '../../App.css';
 import styles from './components/SanGong.module.css';
 
@@ -52,19 +53,18 @@ export const SanGongGame: React.FC<Props> = ({ onBackToLobby }) => {
         if (parsed > 0) setSelectedChip(parsed);
     };
 
-    const renderHand = (hand: import('./types').SanGongHand | null, label: string, side: 'player' | 'banker', showCards: boolean) => (
+    const renderHand = (hand: import('./types').SanGongHand | null, label: string, side: 'player' | 'banker', showCards: boolean, startIndex: number) => (
         <div className={`${styles.handSide} ${styles[side]}`}>
             <div className={styles.handLabel}>{label}</div>
             <div className={styles.cardsRow}>
-                {hand && showCards ? hand.cards.map((c, i) => (
-                    <div key={i} className={styles.card}>
-                        <span className={c.suit === '♥' || c.suit === '♦' ? styles.red : styles.black}>
-                            {c.rank}{c.suit}
-                        </span>
-                    </div>
-                )) : [0, 1, 2].map(i => (
-                    <div key={i} className={`${styles.card} ${styles.cardBack}`}>🂠</div>
-                ))}
+                {showCards && hand
+                    ? hand.cards.map((c, i) => (
+                        <Card key={i} card={c} dealIndex={startIndex + i} />
+                    ))
+                    : [0, 1, 2].map(i => (
+                        <Card key={i} hidden dealIndex={startIndex + i} />
+                    ))
+                }
             </div>
             {hand && showCards && <div className={styles.handInfo}>{hand.handName} {hand.isSanGong ? '🏆' : `(${hand.points}点)`}</div>}
         </div>
@@ -93,11 +93,11 @@ export const SanGongGame: React.FC<Props> = ({ onBackToLobby }) => {
                     <div className={styles.layout}>
                         {/* 手牌区 */}
                         <div className={styles.handsArea}>
-                            {renderHand(gameState.playerHand, '闲 Player', 'player', true)}
+                            {renderHand(gameState.playerHand, '闲 Player', 'player', true, 0)}
                             <div className={styles.vs}>
                                 {isResult && gameState.result ? getResultName(gameState.result) : 'VS'}
                             </div>
-                            {renderHand(gameState.bankerHand, '庄 Banker', 'banker', gameState.phase === 'RESULT')}
+                            {renderHand(gameState.bankerHand, '庄 Banker', 'banker', gameState.phase === 'RESULT', 3)}
                         </div>
 
                         {gameState.message && <div className={styles.messageBar}>{gameState.message}</div>}
