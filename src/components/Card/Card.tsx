@@ -1,5 +1,6 @@
 import React from 'react';
 import { Card as CardModel, Suit } from '../../logic/Card';
+import { SuitIcon } from './SuitIcon';
 import styles from './Card.module.css';
 
 interface CardProps {
@@ -32,19 +33,39 @@ export const Card: React.FC<CardProps> = ({
         );
     }
 
+    const isAce = card.rank === 'A';
+    const isFace = ['J', 'Q', 'K'].includes(card.rank);
+
+    let specialClass = '';
+    if (isAce) specialClass = styles.aceCard;
+    if (isFace) specialClass = styles.faceCard;
+
     return (
         <div
-            className={`${styles.card} ${styles.front} ${isRed ? styles.red : styles.black} ${className}`}
+            className={`${styles.card} ${styles.front} ${isRed ? styles.red : styles.black} ${specialClass} ${className}`}
             style={dealStyle}
         >
-            <div className={styles.topCorner}>
-                <span>{card.rank}</span>
-                <span>{card.suit}</span>
-            </div>
-            <div className={styles.centerSuit}>{card.suit}</div>
-            <div className={styles.bottomCorner}>
-                <span>{card.rank}</span>
-                <span>{card.suit}</span>
+            <div className={styles.innerBorder}>
+                <div className={styles.topCorner}>
+                    <span>{card.rank}</span>
+                    <SuitIcon suit={card.suit} className={styles.cornerSuit} />
+                </div>
+
+                <div className={styles.centerArea}>
+                    {isFace ? (
+                        <div className={styles.faceArtwork}>
+                            <SuitIcon suit={card.suit} className={styles.faceSuit} />
+                            <div className={styles.faceRank}>{card.rank}</div>
+                        </div>
+                    ) : (
+                        <SuitIcon suit={card.suit} className={styles.centerSuit} />
+                    )}
+                </div>
+
+                <div className={styles.bottomCorner}>
+                    <span>{card.rank}</span>
+                    <SuitIcon suit={card.suit} className={styles.cornerSuit} />
+                </div>
             </div>
         </div>
     );

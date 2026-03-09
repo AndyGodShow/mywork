@@ -16,7 +16,7 @@
   }
 }
 
-/* ===== 翻牌动画（正面揭示 - 先转到90度再转回来显示正面） ===== */
+/* ===== 翻牌动画 ===== */
 @keyframes flipReveal {
   0% {
     transform: rotateY(90deg);
@@ -29,148 +29,224 @@
   }
 }
 
-/* ===== 卡牌基础样式 ===== */
+/* ===== 卡牌基础样式 (Luxury Minimalist) ===== */
 .card {
-  width: 80px;
-  height: 112px;
-  border-radius: 10px;
-  background-color: #fff;
+  width: 84px;
+  height: 118px;
+  border-radius: 6px;
+  background-color: #fafbfc;
+  /* 微弱的亚光白纸张色 */
   box-shadow:
-    0 4px 12px rgba(0, 0, 0, 0.35),
-    0 1px 3px rgba(0, 0, 0, 0.2),
-    inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+    0 4px 10px rgba(0, 0, 0, 0.4),
+    0 8px 24px rgba(0, 0, 0, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.9);
+  /* 高光边缘 */
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 7px;
+  justify-content: stretch;
+  padding: 4px;
+  /* 外间距 */
   font-family: 'Georgia', 'Times New Roman', serif;
   font-weight: bold;
   position: relative;
   user-select: none;
-  border: 1px solid #d8d8d8;
+  /* 剔除原有的简单灰色border，完全依靠阴影和inset实现立体感 */
 
-  /* 默认发牌动画，delay 由内联 style 控制 */
+  /* 默认发牌动画 */
   animation: dealIn 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* ===== 背面 ===== */
+/* ===== 内边框 (Inner Dual Border) - 高级感的关键 ===== */
+.innerBorder {
+  flex: 1;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  /* 极细内边线 */
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 4px;
+  position: relative;
+}
+
+/* ===== 奢华卡背 (Navy & Gold Geometric) ===== */
 .back {
-  background: linear-gradient(145deg, #1a237e, #283593);
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
+  background: #0f172a;
+  /* 深海军蓝 */
+  padding: 6px;
+  /* 给卡背留白圈 */
 }
 
 .back .pattern {
   width: 100%;
   height: 100%;
+  border-radius: 4px;
+  border: 1px solid #d4af37;
+  /* 哑光金 */
+
+  /* 复杂几何菱形纹理 */
+  background-color: #0f172a;
   background-image:
-    repeating-linear-gradient(45deg,
-      transparent,
-      transparent 6px,
-      rgba(255, 255, 255, 0.07) 6px,
-      rgba(255, 255, 255, 0.07) 7px),
-    repeating-linear-gradient(-45deg,
-      transparent,
-      transparent 6px,
-      rgba(255, 255, 255, 0.07) 6px,
-      rgba(255, 255, 255, 0.07) 7px);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+    linear-gradient(30deg, #162444 12%, transparent 12.5%, transparent 87%, #162444 87.5%, #162444),
+    linear-gradient(150deg, #162444 12%, transparent 12.5%, transparent 87%, #162444 87.5%, #162444),
+    linear-gradient(30deg, #162444 12%, transparent 12.5%, transparent 87%, #162444 87.5%, #162444),
+    linear-gradient(150deg, #162444 12%, transparent 12.5%, transparent 87%, #162444 87.5%, #162444),
+    linear-gradient(60deg, #d4af37 25%, transparent 25.5%, transparent 75%, #d4af37 75%, #d4af37),
+    linear-gradient(60deg, #d4af37 25%, transparent 25.5%, transparent 75%, #d4af37 75%, #d4af37);
+  background-size: 16px 28px;
+  background-position: 0 0, 0 0, 8px 14px, 8px 14px, 0 0, 8px 14px;
+  opacity: 0.85;
 }
 
-/* ===== 正面 ===== */
 .front {
-  animation: dealIn 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  background-image:
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.8) 0%, rgba(240, 242, 245, 1) 100%);
 }
 
+/* 颜色 */
 .red {
-  color: #c62828;
+  color: #d32f2f;
 }
 
+/* 扑克专用深红 */
 .black {
-  color: #1a1a1a;
+  color: #1c1c1c;
 }
 
-/* ===== 角落 ===== */
+/* 纯正深黑 */
+
+/* ===== 卡角排版 ===== */
 .topCorner {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  font-size: 16px;
-  line-height: 1.1;
-  gap: 0;
-}
-
-.topCorner span:first-child {
-  font-size: 17px;
-  font-weight: 900;
-  letter-spacing: -0.5px;
-}
-
-.topCorner span:last-child {
-  font-size: 15px;
+  line-height: 1;
+  gap: 2px;
 }
 
 .bottomCorner {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  font-size: 16px;
-  line-height: 1.1;
+  line-height: 1;
   transform: rotate(180deg);
-  gap: 0;
+  gap: 2px;
 }
 
+.topCorner span:first-child,
 .bottomCorner span:first-child {
-  font-size: 17px;
+  font-size: 18px;
   font-weight: 900;
-  letter-spacing: -0.5px;
+  letter-spacing: -1px;
 }
 
-.bottomCorner span:last-child {
-  font-size: 15px;
+.cornerSuit {
+  width: 12px;
+  height: 12px;
 }
 
-/* ===== 中央花色 ===== */
-.centerSuit {
+/* ===== 中央区域 ===== */
+.centerArea {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 36px;
-  line-height: 1;
-  opacity: 0.85;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
 }
 
-/* ===== 响应式：小屏幕缩小卡牌 ===== */
+.centerSuit {
+  width: 32px;
+  height: 32px;
+  opacity: 0.95;
+}
+
+/* ===== ACE 专属高光 ===== */
+.aceCard .centerSuit {
+  width: 48px;
+  /* Ace 超大花色 */
+  height: 48px;
+  opacity: 1;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+}
+
+/* ===== 花牌 (J, Q, K) 专属几何底纹 ===== */
+.faceArtwork {
+  width: 36px;
+  height: 54px;
+  border: 2px solid currentColor;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0, 0, 0, 0.04) 2px, rgba(0, 0, 0, 0.04) 4px);
+  overflow: hidden;
+}
+
+/* 红色花牌金色反转 */
+.red.faceCard .faceArtwork {
+  border-color: #d4af37;
+  /* 红色花牌带金边 */
+  background: repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(212, 175, 55, 0.1) 2px, rgba(212, 175, 55, 0.1) 4px);
+}
+
+.red.faceCard .faceRank {
+  color: #d4af37;
+}
+
+.faceSuit {
+  width: 20px;
+  height: 20px;
+  position: absolute;
+}
+
+.faceArtwork::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+}
+
+.faceArtwork::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid currentColor;
+}
+
+.faceRank {
+  font-size: 28px;
+  font-weight: 900;
+  opacity: 0.2;
+  position: absolute;
+  z-index: 0;
+}
+
+/* ===== 响应式缩放 ===== */
 @media (max-width: 480px) {
   .card {
-    width: 58px;
-    height: 82px;
-    padding: 5px;
-    border-radius: 7px;
+    width: 60px;
+    height: 86px;
+    padding: 3px;
+    border-radius: 5px;
   }
 
-  .topCorner span:first-child,
-  .bottomCorner span:first-child {
-    font-size: 13px;
-  }
-
-  .topCorner span:last-child,
-  .bottomCorner span:last-child {
-    font-size: 11px;
-  }
-
-  .centerSuit {
-    font-size: 26px;
-  }
-}
-
-@media (min-width: 1024px) and (max-height: 900px) {
-  .card {
-    width: 68px;
-    height: 96px;
-    padding: 6px;
+  .innerBorder {
+    padding: 3px;
+    border-radius: 3px;
   }
 
   .topCorner span:first-child,
@@ -178,7 +254,61 @@
     font-size: 14px;
   }
 
+  .cornerSuit {
+    width: 10px;
+    height: 10px;
+  }
+
   .centerSuit {
-    font-size: 30px;
+    width: 24px;
+    height: 24px;
+  }
+
+  .aceCard .centerSuit {
+    width: 36px;
+    height: 36px;
+  }
+
+  .faceArtwork {
+    width: 26px;
+    height: 40px;
+    border-width: 1px;
+  }
+
+  .faceSuit {
+    width: 14px;
+    height: 14px;
+  }
+
+  .faceRank {
+    font-size: 20px;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 900px) {
+  .card {
+    width: 72px;
+    height: 100px;
+    padding: 4px;
+  }
+
+  .topCorner span:first-child,
+  .bottomCorner span:first-child {
+    font-size: 15px;
+  }
+
+  .cornerSuit {
+    width: 11px;
+    height: 11px;
+  }
+
+  .centerSuit {
+    width: 28px;
+    height: 28px;
+  }
+
+  .aceCard .centerSuit {
+    width: 40px;
+    height: 40px;
   }
 }
