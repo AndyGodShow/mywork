@@ -5,9 +5,10 @@ import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { DragonTigerPhase } from '../types';
 import type { DragonTigerGameState, DragonTigerBetType } from '../types';
 import { createShuffledDeck, determineResult, calculatePayout, getResultName } from '../logic/DragonTigerEngine';
+import { REVEAL_ROUND_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const DEAL_DURATION_MS = 1500;
+const DEAL_DURATION_MS = REVEAL_ROUND_MS;
 
 export const useDragonTigerGame = () => {
     const { balance, setBalance, resetBalance } = usePersistedBalance('dragontiger', INITIAL_BALANCE);

@@ -4,6 +4,7 @@ import type { SlotSimulationResult } from '../logic/SlotSimulationEngine';
 import { ALL_STRATEGIES } from '../logic/SlotStrategies';
 import { AssetCurve } from '../../../components/Common/Simulation/AssetCurve';
 import styles from '../../../components/Common/Simulation/Simulation.module.css';
+import { waitForNextFrame } from '../../../utils/deferToNextFrame';
 
 export const SlotSimulation: React.FC = () => {
     const [rounds, setRounds] = useState<number | ''>(1000);
@@ -15,22 +16,21 @@ export const SlotSimulation: React.FC = () => {
 
     const handleRun = async () => {
         setLoading(true);
-        setTimeout(() => {
-            const currentRounds = rounds === '' ? 1000 : rounds;
-            const currentBaseBet = baseBet === '' ? 10 : baseBet;
-            const currentLines = activeLines === '' ? 20 : activeLines;
+        await waitForNextFrame();
+        const currentRounds = rounds === '' ? 1000 : rounds;
+        const currentBaseBet = baseBet === '' ? 10 : baseBet;
+        const currentLines = activeLines === '' ? 20 : activeLines;
 
-            const res = runSlotSimulation({
-                rounds: currentRounds,
-                initialBalance: 10000,
-                baseBetPerLine: currentBaseBet,
-                activeLines: currentLines,
-                strategy: ALL_STRATEGIES[strategyIdx],
-            });
+        const res = runSlotSimulation({
+            rounds: currentRounds,
+            initialBalance: 10000,
+            baseBetPerLine: currentBaseBet,
+            activeLines: currentLines,
+            strategy: ALL_STRATEGIES[strategyIdx],
+        });
 
-            setResult(res);
-            setLoading(false);
-        }, 100);
+        setResult(res);
+        setLoading(false);
     };
 
     return (

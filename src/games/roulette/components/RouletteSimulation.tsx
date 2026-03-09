@@ -9,6 +9,7 @@ import {
     RandomOutsideStrategy
 } from '../logic/RouletteStrategies';
 import styles from '../../../components/Common/Simulation/Simulation.module.css';
+import { waitForNextFrame } from '../../../utils/deferToNextFrame';
 
 type StrategyType = 'FLAT_RED' | 'MARTINGALE_RED' | 'RANDOM_OUTSIDE';
 
@@ -21,29 +22,28 @@ export const RouletteSimulation: React.FC = () => {
 
     const handleRun = async () => {
         setLoading(true);
-        setTimeout(() => {
-            let strategy;
-            const currentBaseBet = baseBet === '' ? 100 : baseBet;
-            const currentRounds = rounds === '' ? 1000 : rounds;
+        await waitForNextFrame();
+        let strategy;
+        const currentBaseBet = baseBet === '' ? 100 : baseBet;
+        const currentRounds = rounds === '' ? 1000 : rounds;
 
-            switch (strategyType) {
-                case 'FLAT_RED':
-                    strategy = new FlatRedStrategy(currentBaseBet);
-                    break;
-                case 'MARTINGALE_RED':
-                    strategy = new MartingaleRedStrategy(currentBaseBet);
-                    break;
-                case 'RANDOM_OUTSIDE':
-                    strategy = new RandomOutsideStrategy(currentBaseBet);
-                    break;
-                default:
-                    strategy = new FlatRedStrategy(currentBaseBet);
-            }
+        switch (strategyType) {
+            case 'FLAT_RED':
+                strategy = new FlatRedStrategy(currentBaseBet);
+                break;
+            case 'MARTINGALE_RED':
+                strategy = new MartingaleRedStrategy(currentBaseBet);
+                break;
+            case 'RANDOM_OUTSIDE':
+                strategy = new RandomOutsideStrategy(currentBaseBet);
+                break;
+            default:
+                strategy = new FlatRedStrategy(currentBaseBet);
+        }
 
-            const res = runRouletteSimulation(currentRounds, strategy);
-            setResult(res);
-            setLoading(false);
-        }, 100);
+        const res = runRouletteSimulation(currentRounds, strategy);
+        setResult(res);
+        setLoading(false);
     };
 
     return (

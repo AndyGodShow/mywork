@@ -10,9 +10,10 @@ import {
 } from '../logic/BlackjackRules';
 import { BlackjackPhase } from '../types';
 import type { BlackjackGameState } from '../types';
+import { DEAL_STEP_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const DEAL_DELAY_MS = 800;
+const DEAL_DELAY_MS = DEAL_STEP_MS;
 
 const createEmptyHand = () => ({
     cards: [],

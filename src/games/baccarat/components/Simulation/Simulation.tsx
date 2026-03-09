@@ -6,6 +6,7 @@ import { AssetCurve } from '../../../../components/Common/Simulation/AssetCurve'
 import { formatPercent } from '../../../../components/Common/Simulation/stats';
 import { FlatBetStrategy, MartingaleStrategy, AlwaysTieStrategy, RandomStrategy, MartingaleRandomStrategy } from '../../logic/Strategies';
 import styles from '../../../../components/Common/Simulation/Simulation.module.css';
+import { waitForNextFrame } from '../../../../utils/deferToNextFrame';
 
 type StrategyType = 'FLAT_PLAYER' | 'FLAT_BANKER' | 'MARTINGALE_PLAYER' | 'MARTINGALE_BANKER' | 'ALWAYS_TIE' | 'RANDOM' | 'MARTINGALE_RANDOM';
 
@@ -18,43 +19,40 @@ export const Simulation: React.FC = () => {
 
     const handleRun = async () => {
         setLoading(true);
-        // Yield to UI thread
-        setTimeout(() => {
-            let strategy;
-            // Default to 0 or some safe value if empty
-            const currentBaseBet = baseBet === '' ? 100 : baseBet;
-            const currentRounds = rounds === '' ? 1000 : rounds;
+        await waitForNextFrame();
+        let strategy;
+        const currentBaseBet = baseBet === '' ? 100 : baseBet;
+        const currentRounds = rounds === '' ? 1000 : rounds;
 
-            switch (strategyType) {
-                case 'FLAT_PLAYER':
-                    strategy = new FlatBetStrategy(currentBaseBet, 'PLAYER');
-                    break;
-                case 'FLAT_BANKER':
-                    strategy = new FlatBetStrategy(currentBaseBet, 'BANKER');
-                    break;
-                case 'MARTINGALE_PLAYER':
-                    strategy = new MartingaleStrategy(currentBaseBet, 'PLAYER');
-                    break;
-                case 'MARTINGALE_BANKER':
-                    strategy = new MartingaleStrategy(currentBaseBet, 'BANKER');
-                    break;
-                case 'ALWAYS_TIE':
-                    strategy = new AlwaysTieStrategy(currentBaseBet);
-                    break;
-                case 'RANDOM':
-                    strategy = new RandomStrategy(currentBaseBet);
-                    break;
-                case 'MARTINGALE_RANDOM':
-                    strategy = new MartingaleRandomStrategy(currentBaseBet);
-                    break;
-                default:
-                    strategy = new FlatBetStrategy(currentBaseBet, 'PLAYER');
-            }
+        switch (strategyType) {
+            case 'FLAT_PLAYER':
+                strategy = new FlatBetStrategy(currentBaseBet, 'PLAYER');
+                break;
+            case 'FLAT_BANKER':
+                strategy = new FlatBetStrategy(currentBaseBet, 'BANKER');
+                break;
+            case 'MARTINGALE_PLAYER':
+                strategy = new MartingaleStrategy(currentBaseBet, 'PLAYER');
+                break;
+            case 'MARTINGALE_BANKER':
+                strategy = new MartingaleStrategy(currentBaseBet, 'BANKER');
+                break;
+            case 'ALWAYS_TIE':
+                strategy = new AlwaysTieStrategy(currentBaseBet);
+                break;
+            case 'RANDOM':
+                strategy = new RandomStrategy(currentBaseBet);
+                break;
+            case 'MARTINGALE_RANDOM':
+                strategy = new MartingaleRandomStrategy(currentBaseBet);
+                break;
+            default:
+                strategy = new FlatBetStrategy(currentBaseBet, 'PLAYER');
+        }
 
-            const res = runSimulation(currentRounds, strategy);
-            setResult(res);
-            setLoading(false);
-        }, 100);
+        const res = runSimulation(currentRounds, strategy);
+        setResult(res);
+        setLoading(false);
     };
 
     return (

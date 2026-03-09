@@ -6,6 +6,7 @@ import { runSanGongSimulation } from '../logic/SanGongSimulationEngine';
 import type { SGSimulationResult } from '../logic/SanGongSimulationEngine';
 import { AssetCurve } from '../../../components/Common/Simulation/AssetCurve';
 import { formatPercent } from '../../../components/Common/Simulation/stats';
+import { waitForNextFrame } from '../../../utils/deferToNextFrame';
 import styles from '../../../components/Common/Simulation/Simulation.module.css';
 
 export const SGSimulation: React.FC = () => {
@@ -16,20 +17,18 @@ export const SGSimulation: React.FC = () => {
     const [result, setResult] = useState<SGSimulationResult | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleRun = () => {
+    const handleRun = async () => {
         setLoading(true);
         const currentRounds = rounds === '' ? 1000 : rounds;
         const currentBaseBet = baseBet === '' ? 100 : baseBet;
-
-        setTimeout(() => {
-            setResult(runSanGongSimulation({
-                rounds: currentRounds,
-                initialBalance: 10000,
-                bets: ALL_SG_STRATEGIES[si].getBets(currentBaseBet),
-                useMartingale: mart,
-            }));
-            setLoading(false);
-        }, 100);
+        await waitForNextFrame();
+        setResult(runSanGongSimulation({
+            rounds: currentRounds,
+            initialBalance: 10000,
+            bets: ALL_SG_STRATEGIES[si].getBets(currentBaseBet),
+            useMartingale: mart,
+        }));
+        setLoading(false);
     };
 
     return (

@@ -5,9 +5,10 @@ import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { SicBoPhase } from '../types';
 import type { SicBoGameState, SicBoBetType, DiceResult } from '../types';
 import { rollDice, calculatePayout } from '../logic/SicBoEngine';
+import { SICBO_ROLL_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const ROLL_DURATION_MS = 2000;
+const ROLL_DURATION_MS = SICBO_ROLL_MS;
 
 export const useSicBoGame = () => {
     const { balance, setBalance, resetBalance } = usePersistedBalance('sicbo', INITIAL_BALANCE);

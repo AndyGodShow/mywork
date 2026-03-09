@@ -4,9 +4,10 @@ import { RoulettePhase } from '../types';
 import type { RouletteGameState, RouletteBetType } from '../types';
 import { calculateRoulettePayout } from '../logic/RouletteEngine';
 import { getSecureRandomInt } from '../../../logic/Random';
+import { ROULETTE_SPIN_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const SPIN_DURATION_MS = 4200;
+const SPIN_DURATION_MS = ROULETTE_SPIN_MS;
 
 export const useRouletteGame = () => {
     const { balance, setBalance, resetBalance } = usePersistedBalance('roulette', INITIAL_BALANCE);

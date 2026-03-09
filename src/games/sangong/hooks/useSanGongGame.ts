@@ -5,9 +5,10 @@ import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { SanGongPhase } from '../types';
 import type { SanGongGameState, SanGongBetType } from '../types';
 import { createDeck, evaluateHand, compareHands, calculatePayout, getResultName } from '../logic/SanGongEngine';
+import { REVEAL_ROUND_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const DEAL_DURATION_MS = 1500;
+const DEAL_DURATION_MS = REVEAL_ROUND_MS;
 
 export const useSanGongGame = () => {
     const { balance, setBalance, resetBalance } = usePersistedBalance('sangong', INITIAL_BALANCE);

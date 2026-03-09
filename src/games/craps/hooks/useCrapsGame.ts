@@ -5,9 +5,10 @@ import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { CrapsPhase } from '../types';
 import type { CrapsGameState, CrapsBetType } from '../types';
 import { rollCrapsDice, getDiceSum, evaluateComeOutRoll, evaluatePointRoll } from '../logic/CrapsEngine';
+import { CRAPS_ROLL_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const ROLL_DURATION_MS = 1200;
+const ROLL_DURATION_MS = CRAPS_ROLL_MS;
 
 type HistoryType = 'natural' | 'craps' | 'point_set' | 'point_hit' | 'seven_out' | 'continue';
 

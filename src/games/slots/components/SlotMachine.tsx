@@ -2,6 +2,13 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import type { SlotSymbol, SpinResult } from '../types';
 import { SYMBOL_EMOJI, PAYLINE_PATTERNS, SlotPhase, SYMBOL_WEIGHTS } from '../types';
 import type { SlotPhase as SlotPhaseType } from '../types';
+import {
+    SLOT_COUNT_UP_MS,
+    SLOT_REEL_BASE_STOP_MS,
+    SLOT_REEL_BOUNCE_MS,
+    SLOT_REEL_STEP_STOP_MS,
+    SLOT_REEL_TICK_MS,
+} from '../../../utils/motion';
 import styles from './SlotMachine.module.css';
 
 interface SlotMachineProps {
@@ -35,7 +42,7 @@ const getWinTier = (totalWin: number, totalBet: number): 'none' | 'small' | 'med
 };
 
 // 赢额滚动递增 Hook
-const useCountUp = (target: number, duration: number = 1500): number => {
+const useCountUp = (target: number, duration: number = SLOT_COUNT_UP_MS): number => {
     const [current, setCurrent] = useState(0);
     const animFrameRef = useRef<number>(0);
 
@@ -91,10 +98,10 @@ const ReelColumn: React.FC<{
             // 每 80ms 换一组随机符号
             intervalRef.current = setInterval(() => {
                 setSpinSymbols([randomSymbol(), randomSymbol(), randomSymbol()]);
-            }, 80);
+            }, SLOT_REEL_TICK_MS);
 
             // 停止时间根据列依次延迟
-            const stopDelay = 800 + colIdx * 400;
+            const stopDelay = SLOT_REEL_BASE_STOP_MS + colIdx * SLOT_REEL_STEP_STOP_MS;
             const stopTimer = setTimeout(() => {
                 if (intervalRef.current) clearInterval(intervalRef.current);
                 setIsStopping(true);
@@ -102,7 +109,7 @@ const ReelColumn: React.FC<{
                 setTimeout(() => {
                     setHasStopped(true);
                     setIsStopping(false);
-                }, 300);
+                }, SLOT_REEL_BOUNCE_MS);
             }, stopDelay);
 
             return () => {
@@ -167,7 +174,7 @@ export const SlotMachine: React.FC<SlotMachineProps> = ({ reels, phase, result, 
 
     const totalBet = activeLines * 10; // 近似值仅用于显示等级
     const winTier = result ? getWinTier(result.totalWin, totalBet) : 'none';
-    const displayWin = useCountUp(isResult && result ? result.totalWin : 0, 1200);
+    const displayWin = useCountUp(isResult && result ? result.totalWin : 0);
 
     return (
         <div className={`${styles.machineFrame} ${winTier === 'big' ? styles.jackpotShake : ''}`}>

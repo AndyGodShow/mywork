@@ -6,6 +6,7 @@ import { runSicBoSimulation } from '../logic/SicBoSimulationEngine';
 import type { SicBoSimulationResult } from '../logic/SicBoSimulationEngine';
 import { AssetCurve } from '../../../components/Common/Simulation/AssetCurve';
 import { formatPercent } from '../../../components/Common/Simulation/stats';
+import { waitForNextFrame } from '../../../utils/deferToNextFrame';
 import styles from '../../../components/Common/Simulation/Simulation.module.css';
 
 export const SicBoSimulation: React.FC = () => {
@@ -16,23 +17,21 @@ export const SicBoSimulation: React.FC = () => {
     const [result, setResult] = useState<SicBoSimulationResult | null>(null);
     const [loading, setLoading] = useState(false);
 
-    const handleRun = () => {
+    const handleRun = async () => {
         setLoading(true);
         const currentRounds = rounds === '' ? 1000 : rounds;
         const currentBaseBet = baseBet === '' ? 100 : baseBet;
         const strategy = ALL_STRATEGIES[strategyIndex];
         const bets = strategy.getBets(currentBaseBet);
-
-        setTimeout(() => {
-            const simResult = runSicBoSimulation({
-                rounds: currentRounds,
-                initialBalance: 10000,
-                bets,
-                useMartingale,
-            });
-            setResult(simResult);
-            setLoading(false);
-        }, 100);
+        await waitForNextFrame();
+        const simResult = runSicBoSimulation({
+            rounds: currentRounds,
+            initialBalance: 10000,
+            bets,
+            useMartingale,
+        });
+        setResult(simResult);
+        setLoading(false);
     };
 
     return (

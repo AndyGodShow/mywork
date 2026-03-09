@@ -1,5 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styles from './RouletteWheel.module.css';
+import {
+    ROULETTE_CLOSE_MS,
+    ROULETTE_RESULT_HOLD_MS,
+    ROULETTE_SPIN_MS,
+    ROULETTE_WHEEL_TRANSITION_MS,
+} from '../../../utils/motion';
 
 // European roulette wheel order (clockwise)
 const WHEEL_NUMBERS = [
@@ -79,7 +85,7 @@ export const RouletteWheel: React.FC<RouletteWheelProps> = ({
             }, 0);
             timersRef.current.push(t0);
 
-            // After spin finishes (4200ms), show result for 2s, then close
+            // After spin finishes, show result briefly, then close
             const t1 = setTimeout(() => {
                 setAnimPhase('result');
                 const t2 = setTimeout(() => {
@@ -89,11 +95,11 @@ export const RouletteWheel: React.FC<RouletteWheelProps> = ({
                         setShowBall(false);
                         isAnimatingRef.current = false;
                         onCompleteRef.current();
-                    }, 500);
+                    }, ROULETTE_CLOSE_MS);
                     timersRef.current.push(t3);
-                }, 2000);
+                }, ROULETTE_RESULT_HOLD_MS);
                 timersRef.current.push(t2);
-            }, 4200);
+            }, ROULETTE_SPIN_MS);
             timersRef.current.push(t1);
         }
 
@@ -183,7 +189,7 @@ export const RouletteWheel: React.FC<RouletteWheelProps> = ({
                             style={{
                                 transform: `rotate(${wheelRotation}deg)`,
                                 transition: animPhase === 'spinning'
-                                    ? 'transform 4s cubic-bezier(0.15, 0.6, 0.25, 1)'
+                                    ? `transform ${ROULETTE_WHEEL_TRANSITION_MS}ms cubic-bezier(0.15, 0.6, 0.25, 1)`
                                     : 'none',
                             }}
                         >

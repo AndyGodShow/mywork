@@ -12,9 +12,10 @@ import {
 } from '../logic/Rules';
 import type { GameState, PlayerState, RoundResult, BetType } from '../../../types';
 import { GamePhase } from '../../../types';
+import { DEAL_STEP_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const DEAL_DELAY_MS = 800;
+const DEAL_DELAY_MS = DEAL_STEP_MS;
 const INITIAL_DECK_REMAINING = 8 * 52;
 
 export const useBaccaratGame = () => {

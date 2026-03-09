@@ -3,10 +3,11 @@ import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { SlotPhase, PAYLINES } from '../types';
 import type { SlotGameState } from '../types';
 import { generateReels, evaluateSpin } from '../logic/SlotEngine';
+import { SLOT_AUTO_RETURN_MS, SLOT_SPIN_MS } from '../../../utils/motion';
 
 const INITIAL_BALANCE = 10000;
-const SPIN_DURATION_MS = 2400; // 延长以配合卷轴依次停止动画
-const AUTO_RETURN_DELAY_MS = 2200; // 结果阶段后自动回到下注
+const SPIN_DURATION_MS = SLOT_SPIN_MS;
+const AUTO_RETURN_DELAY_MS = SLOT_AUTO_RETURN_MS;
 
 export const useSlotGame = () => {
     const { balance, setBalance, resetBalance } = usePersistedBalance('slots', INITIAL_BALANCE);

@@ -9,6 +9,7 @@ import {
     DealerMimicStrategy
 } from '../logic/BlackjackStrategies';
 import styles from '../../../components/Common/Simulation/Simulation.module.css';
+import { waitForNextFrame } from '../../../utils/deferToNextFrame';
 
 type StrategyType = 'BASIC' | 'MARTINGALE_BASIC' | 'DEALER_MIMIC';
 
@@ -21,29 +22,28 @@ export const BlackjackSimulation: React.FC = () => {
 
     const handleRun = async () => {
         setLoading(true);
-        setTimeout(() => {
-            let strategy;
-            const currentBaseBet = baseBet === '' ? 100 : baseBet;
-            const currentRounds = rounds === '' ? 1000 : rounds;
+        await waitForNextFrame();
+        let strategy;
+        const currentBaseBet = baseBet === '' ? 100 : baseBet;
+        const currentRounds = rounds === '' ? 1000 : rounds;
 
-            switch (strategyType) {
-                case 'BASIC':
-                    strategy = new BasicStrategyPlayer(currentBaseBet);
-                    break;
-                case 'MARTINGALE_BASIC':
-                    strategy = new MartingaleBasicStrategy(currentBaseBet);
-                    break;
-                case 'DEALER_MIMIC':
-                    strategy = new DealerMimicStrategy(currentBaseBet);
-                    break;
-                default:
-                    strategy = new BasicStrategyPlayer(currentBaseBet);
-            }
+        switch (strategyType) {
+            case 'BASIC':
+                strategy = new BasicStrategyPlayer(currentBaseBet);
+                break;
+            case 'MARTINGALE_BASIC':
+                strategy = new MartingaleBasicStrategy(currentBaseBet);
+                break;
+            case 'DEALER_MIMIC':
+                strategy = new DealerMimicStrategy(currentBaseBet);
+                break;
+            default:
+                strategy = new BasicStrategyPlayer(currentBaseBet);
+        }
 
-            const res = runBlackjackSimulation(currentRounds, strategy);
-            setResult(res);
-            setLoading(false);
-        }, 100);
+        const res = runBlackjackSimulation(currentRounds, strategy);
+        setResult(res);
+        setLoading(false);
     };
 
     return (

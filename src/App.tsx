@@ -1,6 +1,7 @@
 import { useEffect, useState, lazy, Suspense, useTransition } from 'react';
 import { Lobby } from './components/Lobby/Lobby';
 import { ErrorBoundary } from './components/ErrorBoundary';
+import { APP_PRELOAD_DELAY_MS } from './utils/motion';
 
 const loadBaccaratGame = () => import('./games/baccarat/BaccaratGame');
 const loadBlackjackGame = () => import('./games/blackjack/BlackjackGame');
@@ -111,7 +112,7 @@ function App() {
       return () => idleWindow.cancelIdleCallback?.(idleId);
     }
 
-    const timer = window.setTimeout(preloadAllGames, 1200);
+    const timer = window.setTimeout(preloadAllGames, APP_PRELOAD_DELAY_MS);
     return () => window.clearTimeout(timer);
   }, []);
 
