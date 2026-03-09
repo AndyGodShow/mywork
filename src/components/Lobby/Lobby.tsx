@@ -12,6 +12,8 @@ interface GameInfo {
 
 interface LobbyProps {
     onSelectGame: (gameId: string) => void;
+    onPreviewGame?: (gameId: string) => void;
+    pendingGameId?: string | null;
 }
 
 const GAMES: GameInfo[] = [
@@ -81,7 +83,20 @@ const GAMES: GameInfo[] = [
     }
 ];
 
-export const Lobby: React.FC<LobbyProps> = ({ onSelectGame }) => {
+export const Lobby: React.FC<LobbyProps> = ({ onSelectGame, onPreviewGame, pendingGameId = null }) => {
+    const handlePreview = (gameId: string, status: GameInfo['status']) => {
+        if (status !== 'active' || !onPreviewGame) return;
+        onPreviewGame(gameId);
+    };
+
+    const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>, gameId: string, status: GameInfo['status']) => {
+        if (status !== 'active') return;
+        if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            onSelectGame(gameId);
+        }
+    };
+
     return (
         <div className="lobby-container">
             <div className="lobby-header">
@@ -95,6 +110,13 @@ export const Lobby: React.FC<LobbyProps> = ({ onSelectGame }) => {
                         key={game.id}
                         className={`game-card ${game.status}`}
                         onClick={() => game.status === 'active' && onSelectGame(game.id)}
+                        onMouseEnter={() => handlePreview(game.id, game.status)}
+                        onFocus={() => handlePreview(game.id, game.status)}
+                        onTouchStart={() => handlePreview(game.id, game.status)}
+                        onKeyDown={(event) => handleKeyDown(event, game.id, game.status)}
+                        role={game.status === 'active' ? 'button' : undefined}
+                        tabIndex={game.status === 'active' ? 0 : -1}
+                        aria-busy={pendingGameId === game.id}
                         style={{ '--theme-color': game.color } as React.CSSProperties}
                     >
                         <div className="game-icon">{game.icon}</div>
@@ -106,7 +128,7 @@ export const Lobby: React.FC<LobbyProps> = ({ onSelectGame }) => {
                             )}
                         </div>
                         {game.status === 'active' && (
-                            <div className="play-overlay">开始学习</div>
+                            <div className="play-overlay">{pendingGameId === game.id ? '正在进入...' : '开始学习'}</div>
                         )}
                     </div>
                 ))}

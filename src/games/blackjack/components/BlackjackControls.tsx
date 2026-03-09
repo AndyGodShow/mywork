@@ -1,5 +1,6 @@
 import React from 'react';
 import { BlackjackPhase } from '../types';
+import { confirmResetBalance } from '../../../utils/confirmResetBalance';
 import styles from './BlackjackControls.module.css';
 
 interface BlackjackControlsProps {
@@ -26,6 +27,12 @@ export const BlackjackControls: React.FC<BlackjackControlsProps> = ({
     onResetBalance,
 }) => {
     const [customAmount, setCustomAmount] = React.useState<number | string>(100);
+    const canResetBalance = phase === BlackjackPhase.Betting || phase === BlackjackPhase.Result;
+    const handleResetBalanceClick = () => {
+        if (!onResetBalance || !canResetBalance) return;
+        if (!confirmResetBalance({ pendingStake: currentBet })) return;
+        onResetBalance();
+    };
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
@@ -49,7 +56,13 @@ export const BlackjackControls: React.FC<BlackjackControlsProps> = ({
                     <div className={styles.statValueWrapper}>
                         <span className={styles.statValue}>${balance.toLocaleString()}</span>
                         {onResetBalance && (
-                            <button className={styles.resetBalanceBtn} onClick={onResetBalance} title="重置余额">
+                            <button
+                                className={styles.resetBalanceBtn}
+                                onClick={handleResetBalanceClick}
+                                title={canResetBalance ? '重置余额并清空当前局' : '请等待当前回合完成'}
+                                aria-label="重置余额并清空当前局"
+                                disabled={!canResetBalance}
+                            >
                                 ↺
                             </button>
                         )}

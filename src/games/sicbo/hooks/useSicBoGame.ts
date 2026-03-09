@@ -1,6 +1,6 @@
 // ===== 骰宝游戏状态 Hook =====
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { SicBoPhase } from '../types';
 import type { SicBoGameState, SicBoBetType, DiceResult } from '../types';
@@ -19,6 +19,14 @@ export const useSicBoGame = () => {
         history: [],
         message: '请选择下注区域',
     });
+    const rollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearRollTimer = useCallback(() => {
+        if (rollTimerRef.current) {
+            clearTimeout(rollTimerRef.current);
+            rollTimerRef.current = null;
+        }
+    }, []);
 
     const placeBet = (type: SicBoBetType, amount: number, value?: number) => {
         if (gameState.phase !== SicBoPhase.Betting) return;
@@ -58,7 +66,9 @@ export const useSicBoGame = () => {
         }));
 
         // 等待动画完成后计算赔付
-        setTimeout(() => {
+        clearRollTimer();
+        rollTimerRef.current = setTimeout(() => {
+            rollTimerRef.current = null;
             let totalWin = 0;
             currentBets.forEach(bet => {
                 totalWin += calculatePayout(bet, dice);
@@ -75,9 +85,10 @@ export const useSicBoGame = () => {
                 message: `骰子: ${dice.join(', ')} | 总和: ${sum} | ${totalWin > 0 ? `赢得: $${totalWin}` : '未中奖'}`,
             }));
         }, ROLL_DURATION_MS);
-    }, [gameState.bets, gameState.phase, setBalance]);
+    }, [clearRollTimer, gameState.bets, gameState.phase, setBalance]);
 
     const resetGame = () => {
+        clearRollTimer();
         setDiceResult(null);
         setGameState(prev => ({
             ...prev,
@@ -88,7 +99,20 @@ export const useSicBoGame = () => {
         }));
     };
 
-    // resetBalance provided by usePersistedBalance
+    const handleResetBalance = () => {
+        clearRollTimer();
+        resetBalance();
+        setDiceResult(null);
+        setGameState(prev => ({
+            ...prev,
+            phase: SicBoPhase.Betting,
+            bets: [],
+            dice: null,
+            message: '请选择下注区域',
+        }));
+    };
+
+    useEffect(() => clearRollTimer, [clearRollTimer]);
 
     return {
         gameState,
@@ -98,6 +122,6 @@ export const useSicBoGame = () => {
         clearBets,
         roll,
         resetGame,
-        resetBalance,
+        resetBalance: handleResetBalance,
     };
 };

@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { Card } from '../../../logic/Card';
 import { Deck } from '../../../logic/Deck';
@@ -14,18 +14,43 @@ import type { BlackjackGameState } from '../types';
 const INITIAL_BALANCE = 10000;
 const DEAL_DELAY_MS = 800;
 
+const createEmptyHand = () => ({
+    cards: [],
+    score: 0,
+    bet: 0,
+    isBust: false,
+    isStay: false,
+    status: 'active' as const,
+});
+
 export const useBlackjackGame = () => {
     const deckRef = useRef<Deck>(new Deck(6));
     const { balance, setBalance, resetBalance } = usePersistedBalance('blackjack', INITIAL_BALANCE);
+    const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+    const actionTokenRef = useRef(0);
     const [gameState, setGameState] = useState<BlackjackGameState>({
         phase: BlackjackPhase.Betting,
-        playerHands: [{ cards: [], score: 0, bet: 0, isBust: false, isStay: false, status: 'active' }],
+        playerHands: [createEmptyHand()],
         currentHandIndex: 0,
-        dealerHand: { cards: [], score: 0, bet: 0, isBust: false, isStay: false, status: 'active' },
+        dealerHand: createEmptyHand(),
         deckRemaining: 312, // Initial 6-deck count
         message: '请下注开始游戏',
         history: [],
     });
+
+    const schedule = useCallback((callback: () => void, delay: number) => {
+        const timer = setTimeout(() => {
+            timersRef.current = timersRef.current.filter(entry => entry !== timer);
+            callback();
+        }, delay);
+        timersRef.current.push(timer);
+    }, []);
+
+    const clearPendingActions = useCallback(() => {
+        actionTokenRef.current += 1;
+        timersRef.current.forEach(clearTimeout);
+        timersRef.current = [];
+    }, []);
 
     const drawCard = useCallback((): Card => {
         let card = deckRef.current.draw();
@@ -51,6 +76,7 @@ export const useBlackjackGame = () => {
     const deal = () => {
         const bet = gameState.playerHands[0].bet;
         if (bet === 0) return;
+        const dealToken = actionTokenRef.current;
 
         const p1 = drawCard();
         const d1 = drawCard();
@@ -63,7 +89,8 @@ export const useBlackjackGame = () => {
             message: '正在发牌...',
         }));
 
-        setTimeout(() => {
+        schedule(() => {
+            if (dealToken !== actionTokenRef.current) return;
             const initialPlayerCards = [p1, p2];
             const initialDealerCards = [d1, d2];
             const pScore = calculateScore(initialPlayerCards).score;
@@ -98,6 +125,7 @@ export const useBlackjackGame = () => {
 
     const hit = () => {
         if (gameState.phase !== BlackjackPhase.PlayerTurn) return;
+        const hitToken = actionTokenRef.current;
 
         const card = drawCard();
 
@@ -120,7 +148,10 @@ export const useBlackjackGame = () => {
 
             if (bust) {
                 // Schedule finalizeRound outside setState
-                setTimeout(() => finalizeRound(false, false, newScore, prev.dealerHand.score), 0);
+                schedule(() => {
+                    if (hitToken !== actionTokenRef.current) return;
+                    finalizeRound(false, false, newScore, prev.dealerHand.score);
+                }, 0);
             }
 
             return {
@@ -134,6 +165,7 @@ export const useBlackjackGame = () => {
 
     const stand = () => {
         if (gameState.phase !== BlackjackPhase.PlayerTurn) return;
+        const standToken = actionTokenRef.current;
 
         // Snapshot player score BEFORE async dealer turn
         const playerScore = gameState.playerHands[0].score;
@@ -147,6 +179,7 @@ export const useBlackjackGame = () => {
 
         // Dealer draws sequentially with setTimeout chain
         const processDealerStep = () => {
+            if (standToken !== actionTokenRef.current) return;
             if (shouldDealerHit(dealerCardsArray)) {
                 const newCard = drawCard();
                 dealerCardsArray.push(newCard);
@@ -156,14 +189,14 @@ export const useBlackjackGame = () => {
                     dealerHand: { ...prev.dealerHand, cards: [...dealerCardsArray], score: currentScore },
                     deckRemaining: deckRef.current.remaining
                 }));
-                setTimeout(processDealerStep, DEAL_DELAY_MS);
+                schedule(processDealerStep, DEAL_DELAY_MS);
             } else {
                 const finalScore = calculateScore(dealerCardsArray).score;
                 finalizeRound(false, false, playerScore, finalScore, [...dealerCardsArray]);
             }
         };
 
-        setTimeout(processDealerStep, DEAL_DELAY_MS);
+        schedule(processDealerStep, DEAL_DELAY_MS);
     };
 
     const finalizeRound = (pBJ: boolean, dBJ: boolean, pScore: number, dScore: number, finalDealerCards?: Card[]) => {
@@ -213,16 +246,33 @@ export const useBlackjackGame = () => {
     };
 
     const resetGame = () => {
+        clearPendingActions();
         setGameState(prev => ({
             ...prev,
             phase: BlackjackPhase.Betting,
-            playerHands: [{ cards: [], score: 0, bet: 0, isBust: false, isStay: false, status: 'active' }],
-            dealerHand: { cards: [], score: 0, bet: 0, isBust: false, isStay: false, status: 'active' },
+            playerHands: [createEmptyHand()],
+            currentHandIndex: 0,
+            dealerHand: createEmptyHand(),
+            deckRemaining: deckRef.current.remaining,
             message: '请下注开始游戏',
         }));
     };
 
-    // resetBalance provided by usePersistedBalance
+    const handleResetBalance = () => {
+        clearPendingActions();
+        resetBalance();
+        setGameState(prev => ({
+            ...prev,
+            phase: BlackjackPhase.Betting,
+            playerHands: [createEmptyHand()],
+            currentHandIndex: 0,
+            dealerHand: createEmptyHand(),
+            deckRemaining: deckRef.current.remaining,
+            message: '请下注开始游戏',
+        }));
+    };
+
+    useEffect(() => clearPendingActions, [clearPendingActions]);
 
     return {
         gameState,
@@ -232,6 +282,6 @@ export const useBlackjackGame = () => {
         hit,
         stand,
         resetGame,
-        resetBalance,
+        resetBalance: handleResetBalance,
     };
 };

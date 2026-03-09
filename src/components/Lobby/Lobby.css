@@ -47,6 +47,7 @@
     align-items: center;
     text-align: left;
     gap: 20px;
+    outline: none;
 }
 
 @media (max-width: 768px) {
@@ -81,6 +82,12 @@
     background: rgba(255, 255, 255, 0.08);
     border-color: var(--theme-color);
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3), 0 0 20px var(--theme-color);
+}
+
+.game-card.active:focus-visible {
+    transform: translateY(-6px);
+    border-color: var(--theme-color);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08), 0 0 0 6px color-mix(in srgb, var(--theme-color) 65%, transparent);
 }
 
 .game-card.coming_soon {

@@ -69,6 +69,12 @@
     color: #fff;
 }
 
+.resetBalanceBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    color: #444;
+}
+
 /* ===== 下注控制 ===== */
 .betControls {
     display: flex;

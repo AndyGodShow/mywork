@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { Card } from '../../../logic/Card';
 import { Deck } from '../../../logic/Deck';
@@ -15,13 +15,17 @@ import { GamePhase } from '../../../types';
 
 const INITIAL_BALANCE = 10000;
 const DEAL_DELAY_MS = 800;
+const INITIAL_DECK_REMAINING = 8 * 52;
 
 export const useBaccaratGame = () => {
     // Deck Management
     const deckRef = useRef<Deck>(new Deck(8));
+    const timersRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+    const roundTokenRef = useRef(0);
 
     // Balance persisted to localStorage
     const { balance, setBalance, resetBalance: resetPersistedBalance } = usePersistedBalance('baccarat', INITIAL_BALANCE);
+    const [deckRemaining, setDeckRemaining] = useState(INITIAL_DECK_REMAINING);
 
     // Player State (Bets)
     const [playerState, setPlayerState] = useState<PlayerState>({
@@ -41,6 +45,22 @@ export const useBaccaratGame = () => {
         message: '请下注',
     });
 
+    const scheduleWait = useCallback((token: number) => (
+        new Promise<boolean>((resolve) => {
+            const timer = setTimeout(() => {
+                timersRef.current = timersRef.current.filter(entry => entry !== timer);
+                resolve(token === roundTokenRef.current);
+            }, DEAL_DELAY_MS);
+            timersRef.current.push(timer);
+        })
+    ), []);
+
+    const clearPendingRound = useCallback(() => {
+        roundTokenRef.current += 1;
+        timersRef.current.forEach(clearTimeout);
+        timersRef.current = [];
+    }, []);
+
     // Helper to safely draw a card, reshuffling if needed
     const drawCard = useCallback((): Card => {
         let card = deckRef.current.draw();
@@ -49,6 +69,7 @@ export const useBaccaratGame = () => {
             deckRef.current.reset();
             card = deckRef.current.draw()!;
         }
+        setDeckRemaining(deckRef.current.remaining);
         return card;
     }, []);
 
@@ -82,6 +103,8 @@ export const useBaccaratGame = () => {
 
     const startGame = async () => {
         if (playerState.currentBet === 0) return;
+        const roundToken = roundTokenRef.current;
+        const currentBets = { ...playerState.bets };
 
         // Balance already deducted in placeBet
 
@@ -96,15 +119,15 @@ export const useBaccaratGame = () => {
         }));
 
         // Initial Deal Sequence with Delays
-        await new Promise((r) => setTimeout(r, DEAL_DELAY_MS));
+        if (!(await scheduleWait(roundToken))) return;
         const p1 = drawCard();
         setGameState((prev) => ({ ...prev, playerHand: [p1], playerScore: calculateHandValue([p1]) }));
 
-        await new Promise((r) => setTimeout(r, DEAL_DELAY_MS));
+        if (!(await scheduleWait(roundToken))) return;
         const b1 = drawCard();
         setGameState((prev) => ({ ...prev, bankerHand: [b1], bankerScore: calculateHandValue([b1]) }));
 
-        await new Promise((r) => setTimeout(r, DEAL_DELAY_MS));
+        if (!(await scheduleWait(roundToken))) return;
         const p2 = drawCard();
         const pHandInitial = [p1, p2];
         setGameState((prev) => ({
@@ -113,7 +136,7 @@ export const useBaccaratGame = () => {
             playerScore: calculateHandValue(pHandInitial),
         }));
 
-        await new Promise((r) => setTimeout(r, DEAL_DELAY_MS));
+        if (!(await scheduleWait(roundToken))) return;
         const b2 = drawCard();
         const bHandInitial = [b1, b2];
         setGameState((prev) => ({
@@ -123,11 +146,8 @@ export const useBaccaratGame = () => {
         }));
 
         // Check Naturals
-        // Snapshot bets before async flow continues
-        const currentBets = { ...playerState.bets };
-
         if (isNatural(pHandInitial) || isNatural(bHandInitial)) {
-            finalizeRound(pHandInitial, bHandInitial, currentBets);
+            finalizeRound(pHandInitial, bHandInitial, currentBets, roundToken);
             return;
         }
 
@@ -140,7 +160,7 @@ export const useBaccaratGame = () => {
         const pAction = getPlayerThirdCardAction(pHandInitial);
         if (pAction === 'draw') {
             setGameState(prev => ({ ...prev, phase: GamePhase.PlayerThirdCard, message: '闲家补牌...' }));
-            await new Promise((r) => setTimeout(r, DEAL_DELAY_MS));
+            if (!(await scheduleWait(roundToken))) return;
             playerThirdCard = drawCard();
             finalPHand.push(playerThirdCard);
             setGameState(prev => ({
@@ -154,7 +174,7 @@ export const useBaccaratGame = () => {
         const bAction = getBankerThirdCardAction(bHandInitial, playerThirdCard);
         if (bAction === 'draw') {
             setGameState(prev => ({ ...prev, phase: GamePhase.BankerThirdCard, message: '庄家补牌...' }));
-            await new Promise((r) => setTimeout(r, DEAL_DELAY_MS));
+            if (!(await scheduleWait(roundToken))) return;
             const b3 = drawCard();
             finalBHand.push(b3);
             setGameState(prev => ({
@@ -164,10 +184,16 @@ export const useBaccaratGame = () => {
             }));
         }
 
-        finalizeRound(finalPHand, finalBHand, currentBets);
+        finalizeRound(finalPHand, finalBHand, currentBets, roundToken);
     };
 
-    const finalizeRound = (pHand: Card[], bHand: Card[], bets: Record<string, number | undefined>) => {
+    const finalizeRound = (
+        pHand: Card[],
+        bHand: Card[],
+        bets: Record<string, number | undefined>,
+        roundToken: number,
+    ) => {
+        if (roundToken !== roundTokenRef.current) return;
         const result = determineWinner(pHand, bHand);
         const pScore = calculateHandValue(pHand);
         const bScore = calculateHandValue(bHand);
@@ -242,11 +268,13 @@ export const useBaccaratGame = () => {
         // Check if we need to reshuffle for the NEXT round
         if (deckRef.current.shouldReshuffle()) {
             deckRef.current.reset();
+            setDeckRemaining(deckRef.current.remaining);
             setGameState(prev => ({ ...prev, message: prev.message + ' (洗牌中...)' }));
         }
     };
 
     const resetForNewGame = () => {
+        clearPendingRound();
         setGameState(prev => ({
             ...prev,
             phase: GamePhase.Betting,
@@ -256,16 +284,30 @@ export const useBaccaratGame = () => {
             bankerScore: 0,
             message: '请下注'
         }));
-    }
+    };
 
     const resetBalance = () => {
+        clearPendingRound();
         resetPersistedBalance();
+        deckRef.current.reset();
+        setDeckRemaining(deckRef.current.remaining);
         setPlayerState({
             balance: 0,
             currentBet: 0,
             bets: {}
         });
+        setGameState(prev => ({
+            ...prev,
+            phase: GamePhase.Betting,
+            playerHand: [],
+            bankerHand: [],
+            playerScore: 0,
+            bankerScore: 0,
+            message: '请下注'
+        }));
     };
+
+    useEffect(() => clearPendingRound, [clearPendingRound]);
 
     return {
         gameState,
@@ -275,6 +317,6 @@ export const useBaccaratGame = () => {
         startGame,
         resetForNewGame,
         resetBalance,
-        deckRemaining: 0
+        deckRemaining
     };
 };

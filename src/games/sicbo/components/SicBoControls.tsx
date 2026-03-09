@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import type { SicBoPhase, DiceResult } from '../types';
+import { confirmResetBalance } from '../../../utils/confirmResetBalance';
 import styles from './SicBoControls.module.css';
 
 interface SicBoControlsProps {
@@ -34,6 +35,12 @@ export const SicBoControls: React.FC<SicBoControlsProps> = ({
     const [customChip, setCustomChip] = useState('');
     const isBetting = phase === 'BETTING';
     const isResult = phase === 'RESULT';
+    const canResetBalance = isBetting || isResult;
+    const handleResetBalanceClick = () => {
+        if (!canResetBalance) return;
+        if (!confirmResetBalance({ pendingStake: totalBet })) return;
+        onResetBalance();
+    };
 
     const handleCustomChip = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
@@ -48,7 +55,15 @@ export const SicBoControls: React.FC<SicBoControlsProps> = ({
             <div className={styles.statsRow}>
                 <span className={styles.stat}>
                     余额: <span>${balance.toLocaleString()}</span>
-                    <button className={styles.resetBalanceBtn} onClick={onResetBalance} title="重置余额">↺</button>
+                    <button
+                        className={styles.resetBalanceBtn}
+                        onClick={handleResetBalanceClick}
+                        title={canResetBalance ? '重置余额并清空当前局' : '请等待摇骰结束'}
+                        aria-label="重置余额并清空当前局"
+                        disabled={!canResetBalance}
+                    >
+                        ↺
+                    </button>
                 </span>
                 <span className={styles.stat}>
                     当前下注: <span>${totalBet.toLocaleString()}</span>

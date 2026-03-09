@@ -192,6 +192,13 @@
     color: #ffd700;
 }
 
+.resetBalBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #666;
+}
+
 .history {
     display: flex;
     gap: 4px;

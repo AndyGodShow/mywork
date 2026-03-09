@@ -69,6 +69,14 @@
     background: rgba(244, 208, 63, 0.1);
 }
 
+.resetBalanceBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #666;
+    background: transparent;
+}
+
 .actionRow {
     display: flex;
     flex-direction: column;

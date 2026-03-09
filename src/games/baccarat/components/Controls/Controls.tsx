@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GamePhase } from '../../../../types';
 import type { PlayerState } from '../../../../types';
+import { confirmResetBalance } from '../../../../utils/confirmResetBalance';
 import styles from './Controls.module.css';
 
 interface ControlsProps {
@@ -24,6 +25,12 @@ export const Controls: React.FC<ControlsProps> = ({
 }) => {
     const [betAmount, setBetAmount] = useState<number | string>(100);
     const isBetting = gamePhase === GamePhase.Betting;
+    const canResetBalance = gamePhase === GamePhase.Betting || gamePhase === GamePhase.Result;
+    const handleResetBalanceClick = () => {
+        if (!onResetBalance || !canResetBalance) return;
+        if (!confirmResetBalance({ pendingStake: playerState.currentBet })) return;
+        onResetBalance();
+    };
 
     const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         // ... (existing logic)
@@ -48,7 +55,13 @@ export const Controls: React.FC<ControlsProps> = ({
                     <div className={styles.balanceWrapper}>
                         <span className={styles.value}>${playerState.balance.toLocaleString()}</span>
                         {onResetBalance && (
-                            <button className={styles.resetBalanceBtn} onClick={onResetBalance} title="重置余额">
+                            <button
+                                className={styles.resetBalanceBtn}
+                                onClick={handleResetBalanceClick}
+                                title={canResetBalance ? '重置余额并清空当前局' : '请等待当前发牌完成'}
+                                aria-label="重置余额并清空当前局"
+                                disabled={!canResetBalance}
+                            >
                                 ↺
                             </button>
                         )}

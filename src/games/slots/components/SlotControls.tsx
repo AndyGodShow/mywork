@@ -1,6 +1,7 @@
 import React from 'react';
 import { SlotPhase } from '../types';
 import type { SlotPhase as SlotPhaseType } from '../types';
+import { confirmResetBalance } from '../../../utils/confirmResetBalance';
 import styles from './SlotControls.module.css';
 
 interface SlotControlsProps {
@@ -63,6 +64,12 @@ export const SlotControls: React.FC<SlotControlsProps> = ({
     const isBetting = phase === SlotPhase.Betting;
     const isSpinning = phase === SlotPhase.Spinning;
     const canSpin = isBetting && totalBet <= balance && totalBet > 0;
+    const canResetBalance = phase === SlotPhase.Betting || phase === SlotPhase.Result;
+    const handleResetBalanceClick = () => {
+        if (!onResetBalance || !canResetBalance) return;
+        if (!confirmResetBalance({ pendingStake: totalBet, inProgress: isAutoSpinning || isSpinning })) return;
+        onResetBalance();
+    };
 
     return (
         <div className={styles.controlsPanel}>
@@ -73,7 +80,15 @@ export const SlotControls: React.FC<SlotControlsProps> = ({
                     <span className={styles.infoValue}>
                         ${balance.toLocaleString()}
                         {onResetBalance && (
-                            <button className={styles.resetBalanceBtn} onClick={onResetBalance} title="重置余额">↺</button>
+                            <button
+                                className={styles.resetBalanceBtn}
+                                onClick={handleResetBalanceClick}
+                                title={canResetBalance ? '重置余额并清空当前局' : '请等待旋转结束'}
+                                aria-label="重置余额并清空当前局"
+                                disabled={!canResetBalance}
+                            >
+                                ↺
+                            </button>
                         )}
                     </span>
                 </div>
@@ -185,7 +200,7 @@ export const SlotControls: React.FC<SlotControlsProps> = ({
 
                         {isBetting && (
                             <button className={styles.resetBtn} onClick={onReset}>
-                                重置
+                                重置当前局
                             </button>
                         )}
                     </>

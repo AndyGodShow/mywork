@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { RoulettePhase } from '../types';
 import type { RouletteGameState, RouletteBetType } from '../types';
@@ -18,6 +18,14 @@ export const useRouletteGame = () => {
         history: [],
         message: '请选择下注区域',
     });
+    const spinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearSpinTimer = useCallback(() => {
+        if (spinTimerRef.current) {
+            clearTimeout(spinTimerRef.current);
+            spinTimerRef.current = null;
+        }
+    }, []);
 
     const placeBet = (type: RouletteBetType, amount: number, value?: number) => {
         if (gameState.phase !== RoulettePhase.Betting) return;
@@ -57,7 +65,9 @@ export const useRouletteGame = () => {
         }));
 
         // Wait for wheel animation to finish, then calculate payouts
-        setTimeout(() => {
+        clearSpinTimer();
+        spinTimerRef.current = setTimeout(() => {
+            spinTimerRef.current = null;
             let totalWin = 0;
             currentBets.forEach(bet => {
                 totalWin += calculateRoulettePayout(bet, resultNum);
@@ -72,9 +82,10 @@ export const useRouletteGame = () => {
                 message: `结果是 ${resultNum}。赢得: $${totalWin}`,
             }));
         }, SPIN_DURATION_MS);
-    }, [gameState.bets, gameState.phase, setBalance]);
+    }, [clearSpinTimer, gameState.bets, gameState.phase, setBalance]);
 
     const resetGame = () => {
+        clearSpinTimer();
         setSpinResult(null);
         setGameState(prev => ({
             ...prev,
@@ -84,7 +95,20 @@ export const useRouletteGame = () => {
         }));
     };
 
-    // resetBalance provided by usePersistedBalance
+    const handleResetBalance = () => {
+        clearSpinTimer();
+        resetBalance();
+        setSpinResult(null);
+        setGameState(prev => ({
+            ...prev,
+            phase: RoulettePhase.Betting,
+            bets: [],
+            lastNumber: null,
+            message: '请选择下注区域',
+        }));
+    };
+
+    useEffect(() => clearSpinTimer, [clearSpinTimer]);
 
     return {
         gameState,
@@ -94,6 +118,6 @@ export const useRouletteGame = () => {
         clearBets,
         spin,
         resetGame,
-        resetBalance,
+        resetBalance: handleResetBalance,
     };
 };

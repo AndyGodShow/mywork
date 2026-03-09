@@ -1,6 +1,6 @@
 // ===== 龙虎斗游戏 Hook =====
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { DragonTigerPhase } from '../types';
 import type { DragonTigerGameState, DragonTigerBetType } from '../types';
@@ -20,6 +20,25 @@ export const useDragonTigerGame = () => {
         history: [],
         message: '请选择下注：龙、虎 或 和',
     });
+    const dealTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const dealTokenRef = useRef(0);
+
+    const clearPendingDeal = useCallback(() => {
+        dealTokenRef.current += 1;
+        if (dealTimerRef.current) {
+            clearTimeout(dealTimerRef.current);
+            dealTimerRef.current = null;
+        }
+    }, []);
+
+    const waitForReveal = useCallback((token: number) => (
+        new Promise<boolean>((resolve) => {
+            dealTimerRef.current = setTimeout(() => {
+                dealTimerRef.current = null;
+                resolve(token === dealTokenRef.current);
+            }, DEAL_DURATION_MS);
+        })
+    ), []);
 
     const placeBet = (type: DragonTigerBetType, amount: number) => {
         if (gameState.phase !== DragonTigerPhase.Betting) return;
@@ -41,6 +60,8 @@ export const useDragonTigerGame = () => {
     const deal = useCallback(async () => {
         if (gameState.phase !== DragonTigerPhase.Betting || gameState.bets.length === 0) return;
 
+        const dealToken = dealTokenRef.current;
+        const currentBets = [...gameState.bets];
         const deck = createShuffledDeck();
         const dragonCard = deck[0];
         const tigerCard = deck[1];
@@ -53,12 +74,13 @@ export const useDragonTigerGame = () => {
             message: '发牌中...',
         }));
 
-        await new Promise(r => setTimeout(r, DEAL_DURATION_MS));
+        const shouldContinue = await waitForReveal(dealToken);
+        if (!shouldContinue) return;
 
         const result = determineResult(dragonCard, tigerCard);
 
         let totalWin = 0;
-        gameState.bets.forEach(bet => {
+        currentBets.forEach(bet => {
             totalWin += calculatePayout(bet, result);
         });
 
@@ -71,9 +93,10 @@ export const useDragonTigerGame = () => {
             history: [result, ...prev.history].slice(0, 20),
             message: `${getResultName(result)}赢！${totalWin > 0 ? `赢得: $${totalWin}` : '未中奖'}`,
         }));
-    }, [gameState.bets, gameState.phase, setBalance]);
+    }, [gameState.bets, gameState.phase, setBalance, waitForReveal]);
 
     const resetGame = () => {
+        clearPendingDeal();
         setGameState(prev => ({
             ...prev,
             phase: DragonTigerPhase.Betting,
@@ -85,7 +108,21 @@ export const useDragonTigerGame = () => {
         }));
     };
 
-    // resetBalance provided by usePersistedBalance
+    const handleResetBalance = () => {
+        clearPendingDeal();
+        resetBalance();
+        setGameState(prev => ({
+            ...prev,
+            phase: DragonTigerPhase.Betting,
+            bets: [],
+            dragonCard: null,
+            tigerCard: null,
+            result: null,
+            message: '请选择下注：龙、虎 或 和',
+        }));
+    };
 
-    return { gameState, balance, placeBet, clearBets, deal, resetGame, resetBalance };
+    useEffect(() => clearPendingDeal, [clearPendingDeal]);
+
+    return { gameState, balance, placeBet, clearBets, deal, resetGame, resetBalance: handleResetBalance };
 };

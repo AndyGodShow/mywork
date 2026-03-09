@@ -1,6 +1,6 @@
 // ===== 花旗骰游戏 Hook =====
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { usePersistedBalance } from '../../../hooks/usePersistedBalance';
 import { CrapsPhase } from '../types';
 import type { CrapsGameState, CrapsBetType } from '../types';
@@ -24,6 +24,14 @@ export const useCrapsGame = () => {
         history: [],
         message: '请下注，然后掷出 Come Out Roll',
     });
+    const rollTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const clearRollTimer = useCallback(() => {
+        if (rollTimerRef.current) {
+            clearTimeout(rollTimerRef.current);
+            rollTimerRef.current = null;
+        }
+    }, []);
 
     const placeBet = (type: CrapsBetType, amount: number) => {
         if (gameState.phase !== CrapsPhase.Betting && gameState.phase !== CrapsPhase.PointSet) return;
@@ -64,7 +72,9 @@ export const useCrapsGame = () => {
             message: '掷骰中...',
         }));
 
-        setTimeout(() => {
+        clearRollTimer();
+        rollTimerRef.current = setTimeout(() => {
+            rollTimerRef.current = null;
             setIsRolling(false);
 
             let totalPayout = 0;
@@ -187,9 +197,11 @@ export const useCrapsGame = () => {
                 }
             }
         }, ROLL_DURATION_MS);
-    }, [gameState.bets, gameState.phase, gameState.roundStatus, gameState.point, setBalance]);
+    }, [clearRollTimer, gameState.bets, gameState.phase, gameState.roundStatus, gameState.point, setBalance]);
 
     const resetGame = () => {
+        clearRollTimer();
+        setIsRolling(false);
         setLastWin(0);
         setGameState({
             phase: CrapsPhase.Betting, roundStatus: 'come_out', bets: [],
@@ -198,7 +210,23 @@ export const useCrapsGame = () => {
         });
     };
 
-    // resetBalance provided by usePersistedBalance
+    const handleResetBalance = () => {
+        clearRollTimer();
+        resetBalance();
+        setIsRolling(false);
+        setLastWin(0);
+        setGameState(prev => ({
+            ...prev,
+            phase: CrapsPhase.Betting,
+            roundStatus: 'come_out',
+            bets: [],
+            dice: null,
+            point: null,
+            message: '请下注，然后掷出 Come Out Roll',
+        }));
+    };
 
-    return { gameState, balance, isRolling, lastWin, placeBet, clearBets, roll, resetGame, resetBalance };
+    useEffect(() => clearRollTimer, [clearRollTimer]);
+
+    return { gameState, balance, isRolling, lastWin, placeBet, clearBets, roll, resetGame, resetBalance: handleResetBalance };
 };

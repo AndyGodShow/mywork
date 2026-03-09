@@ -52,6 +52,14 @@
     background: rgba(255, 215, 0, 0.1);
 }
 
+.resetBalanceBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: rgba(255, 255, 255, 0.12);
+    color: #666;
+    background: transparent;
+}
+
 .history {
     display: flex;
     gap: 5px;

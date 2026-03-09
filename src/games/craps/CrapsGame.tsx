@@ -6,6 +6,7 @@ import { CrapsDice } from './components/CrapsDice';
 import { CrapsSimulationPanel } from './components/CrapsSimulation';
 import { CrapsRulesModal } from './components/CrapsRulesModal';
 import { EducationalOverlay } from '../../components/Common/EducationalOverlay';
+import { confirmResetBalance } from '../../utils/confirmResetBalance';
 import '../../App.css';
 import styles from './components/Craps.module.css';
 
@@ -55,6 +56,12 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
     const canBet = gameState.phase === 'BETTING' || gameState.phase === 'POINT_SET';
     const canRoll = canBet && totalBet > 0;
     const isResult = gameState.phase === 'RESULT';
+    const canResetBalance = canBet || isResult;
+    const handleResetBalance = () => {
+        if (!canResetBalance) return;
+        if (!confirmResetBalance({ pendingStake: totalBet })) return;
+        resetBalance();
+    };
     const CHIPS = [10, 50, 100, 500, 1000];
     const getBetTotal = (type: string) => gameState.bets.filter(b => b.type === type).reduce((s, b) => s + b.amount, 0);
     const handleCustomChip = (value: string) => {
@@ -219,7 +226,16 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
                         <div className={styles.controls}>
                             <div className={styles.statsRow}>
                                 <span className={styles.stat}>余额: <strong>${balance.toLocaleString()}</strong>
-                                    <button className={styles.resetBalBtn} onClick={resetBalance}>↺</button></span>
+                                    <button
+                                        className={styles.resetBalBtn}
+                                        onClick={handleResetBalance}
+                                        title={canResetBalance ? '重置余额并清空当前局' : '请等待掷骰完成'}
+                                        aria-label="重置余额并清空当前局"
+                                        disabled={!canResetBalance}
+                                    >
+                                        ↺
+                                    </button>
+                                </span>
                                 <span className={styles.stat}>下注: <strong>${totalBet}</strong></span>
                                 {lastWin > 0 && isResult && (
                                     <span className={styles.stat} style={{ color: '#81c784' }}>+${lastWin}</span>

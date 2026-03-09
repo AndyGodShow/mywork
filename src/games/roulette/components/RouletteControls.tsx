@@ -1,5 +1,6 @@
 import React from 'react';
 import { RoulettePhase } from '../types';
+import { confirmResetBalance } from '../../../utils/confirmResetBalance';
 import styles from './RouletteControls.module.css';
 
 interface RouletteControlsProps {
@@ -28,6 +29,12 @@ export const RouletteControls: React.FC<RouletteControlsProps> = ({
     onResetBalance,
 }) => {
     const [customAmount, setCustomAmount] = React.useState<string>('');
+    const canResetBalance = phase === RoulettePhase.Betting || phase === RoulettePhase.Result;
+    const handleResetBalanceClick = () => {
+        if (!onResetBalance || !canResetBalance) return;
+        if (!confirmResetBalance({ pendingStake: totalBet })) return;
+        onResetBalance();
+    };
 
     const handleCustomChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = e.target.value;
@@ -54,8 +61,10 @@ export const RouletteControls: React.FC<RouletteControlsProps> = ({
                     {onResetBalance && (
                         <button
                             className={styles.resetBalanceBtn}
-                            onClick={onResetBalance}
-                            title="重置余额"
+                            onClick={handleResetBalanceClick}
+                            title={canResetBalance ? '重置余额并清空当前局' : '请等待旋转结束'}
+                            aria-label="重置余额并清空当前局"
+                            disabled={!canResetBalance}
                         >
                             ↺
                         </button>

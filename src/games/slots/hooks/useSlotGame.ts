@@ -10,6 +10,8 @@ const AUTO_RETURN_DELAY_MS = 2200; // 结果阶段后自动回到下注
 
 export const useSlotGame = () => {
     const { balance, setBalance, resetBalance } = usePersistedBalance('slots', INITIAL_BALANCE);
+    const spinTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const spinTokenRef = useRef(0);
     const [gameState, setGameState] = useState<SlotGameState>({
         phase: SlotPhase.Betting,
         reels: generateReels(),
@@ -26,6 +28,27 @@ export const useSlotGame = () => {
     const autoSpinRef = useRef(false);
     const autoReturnTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    const clearPendingSpin = useCallback(() => {
+        spinTokenRef.current += 1;
+        if (spinTimerRef.current) {
+            clearTimeout(spinTimerRef.current);
+            spinTimerRef.current = null;
+        }
+        if (autoReturnTimerRef.current) {
+            clearTimeout(autoReturnTimerRef.current);
+            autoReturnTimerRef.current = null;
+        }
+    }, []);
+
+    const waitForSpin = useCallback((token: number) => (
+        new Promise<boolean>((resolve) => {
+            spinTimerRef.current = setTimeout(() => {
+                spinTimerRef.current = null;
+                resolve(token === spinTokenRef.current);
+            }, SPIN_DURATION_MS);
+        })
+    ), []);
+
     const totalBet = gameState.betPerLine * gameState.activeLines;
 
     const setBetPerLine = useCallback((amount: number) => {
@@ -40,7 +63,10 @@ export const useSlotGame = () => {
 
     const spin = useCallback(async () => {
         if (gameState.phase !== SlotPhase.Betting) return;
-        const bet = gameState.betPerLine * gameState.activeLines;
+        const spinToken = spinTokenRef.current;
+        const betPerLine = gameState.betPerLine;
+        const activeLines = gameState.activeLines;
+        const bet = betPerLine * activeLines;
         if (bet > balance || bet <= 0) return;
 
         // 清除可能存在的自动返回计时器
@@ -61,11 +87,11 @@ export const useSlotGame = () => {
         }));
 
         // 等待动画
-        await new Promise(r => setTimeout(r, SPIN_DURATION_MS));
+        if (!(await waitForSpin(spinToken))) return;
 
         // 生成结果
         const reels = generateReels();
-        const result = evaluateSpin(reels, gameState.betPerLine, gameState.activeLines);
+        const result = evaluateSpin(reels, betPerLine, activeLines);
 
         // 赢额入账
         setBalance(prev => prev + result.totalWin);
@@ -80,7 +106,7 @@ export const useSlotGame = () => {
                 ? `赢得 $${result.totalWin.toLocaleString()}`
                 : '未中奖',
         }));
-    }, [gameState.phase, gameState.betPerLine, gameState.activeLines, balance, setBalance]);
+    }, [balance, gameState.activeLines, gameState.betPerLine, gameState.phase, setBalance, waitForSpin]);
 
     // 结果阶段自动回到下注
     useEffect(() => {
@@ -151,10 +177,20 @@ export const useSlotGame = () => {
 
     const resetGame = useCallback(() => {
         stopAutoSpin();
-        if (autoReturnTimerRef.current) {
-            clearTimeout(autoReturnTimerRef.current);
-        }
-        setBalance(INITIAL_BALANCE);
+        clearPendingSpin();
+        setGameState(prev => ({
+            ...prev,
+            phase: SlotPhase.Betting,
+            reels: generateReels(),
+            lastResult: null,
+            message: '选择下注金额，点击旋转开始',
+        }));
+    }, [clearPendingSpin, stopAutoSpin]);
+
+    const handleResetBalance = useCallback(() => {
+        stopAutoSpin();
+        clearPendingSpin();
+        resetBalance();
         setGameState({
             phase: SlotPhase.Betting,
             reels: generateReels(),
@@ -164,9 +200,9 @@ export const useSlotGame = () => {
             history: [],
             message: '选择下注金额，点击旋转开始',
         });
-    }, [stopAutoSpin, setBalance]);
+    }, [clearPendingSpin, resetBalance, stopAutoSpin]);
 
-    // resetBalance provided by usePersistedBalance
+    useEffect(() => clearPendingSpin, [clearPendingSpin]);
 
     return {
         gameState,
@@ -176,7 +212,7 @@ export const useSlotGame = () => {
         setBetPerLine,
         setActiveLines,
         resetGame,
-        resetBalance,
+        resetBalance: handleResetBalance,
         autoSpinCount,
         isAutoSpinning,
         startAutoSpin,
