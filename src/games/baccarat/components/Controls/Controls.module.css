@@ -360,9 +360,14 @@
 /* ============ 移动端极致体验优化 ============ */
 @media (max-width: 768px) {
     .controlsContainer {
-        padding: 15px;
-        padding-bottom: 90px;
+        padding: 12px;
+        padding-bottom: 76px;
         border-radius: 16px;
+    }
+
+    .balanceInfo {
+        margin-bottom: 14px;
+        padding-bottom: 12px;
     }
 
     .chipSelector {
@@ -379,7 +384,7 @@
         margin-right: -5px;
         padding-left: 10px;
         padding-right: 10px;
-        gap: 15px;
+        gap: 12px;
     }
 
     .chipSelector::-webkit-scrollbar {
@@ -389,13 +394,14 @@
     .chip {
         scroll-snap-align: center;
         flex-shrink: 0;
-        width: 55px;
-        height: 55px;
+        width: 48px;
+        height: 48px;
+        font-size: 0.78rem;
     }
 
     .chip::after {
-        width: 40px;
-        height: 40px;
+        width: 34px;
+        height: 34px;
     }
 
     /* 沉浸式固定操作栏 */
@@ -407,8 +413,8 @@
         right: 0;
         width: 100%;
         margin-top: 0;
-        padding: 15px 20px;
-        padding-bottom: calc(15px + env(safe-area-inset-bottom, 0px));
+        padding: 10px 16px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
         background: rgba(14, 26, 42, 0.85);
         backdrop-filter: blur(20px);
         -webkit-backdrop-filter: blur(20px);
@@ -420,16 +426,17 @@
 
     .betActionsRow {
         gap: 6px;
+        min-height: 48px;
     }
 
     .betBtn {
         min-width: 0;
         padding: 8px 2px;
-        font-size: 0.85rem;
+        font-size: 0.8rem;
     }
 
     .sideBetBtn {
-        font-size: 0.70rem;
+        font-size: 0.65rem;
     }
 
     .odds {

@@ -1,8 +1,8 @@
 .tableContainer {
     display: flex;
     flex-direction: column;
-    gap: 18px;
-    padding: 20px;
+    gap: 14px;
+    padding: 16px;
     background: linear-gradient(145deg, rgba(30, 10, 60, 0.6), rgba(10, 5, 30, 0.8));
     border-radius: 18px;
     border: 2px solid rgba(142, 36, 170, 0.3);
@@ -11,7 +11,16 @@
     margin: 0 auto;
 }
 
-/* === 大/小/单/双 主区 === */
+.desktopOnly {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.mobileOnly {
+    display: none;
+}
+
 .mainBets {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -19,7 +28,7 @@
 }
 
 .betBtn {
-    padding: 18px 12px;
+    padding: 14px 10px;
     border-radius: 12px;
     border: 2px solid rgba(255, 255, 255, 0.15);
     cursor: pointer;
@@ -37,8 +46,12 @@
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
-.betBtn:disabled {
-    opacity: 0.6;
+.betBtn:disabled,
+.totalBtn:disabled,
+.tripleBtn:disabled,
+.diceBtn:disabled,
+.comboBtn:disabled {
+    opacity: 0.55;
     cursor: not-allowed;
 }
 
@@ -63,37 +76,35 @@
 }
 
 .betLabel {
-    font-size: 1.8rem;
+    font-size: 1.55rem;
     font-weight: bold;
     color: #fff;
 }
 
 .betDesc {
-    font-size: 0.8rem;
-    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.76rem;
+    color: rgba(255, 255, 255, 0.72);
 }
 
 .betOdds {
-    font-size: 0.75rem;
+    font-size: 0.72rem;
     color: #ffd700;
     font-weight: bold;
 }
 
-/* === 筹码标记 === */
 .chipBadge {
     position: absolute;
     top: 5px;
     right: 5px;
     background: #ffd700;
     color: #000;
-    font-size: 0.65rem;
+    font-size: 0.62rem;
     font-weight: bold;
     padding: 2px 6px;
     border-radius: 10px;
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
 }
 
-/* === 分区标题 === */
 .section {
     display: flex;
     flex-direction: column;
@@ -102,10 +113,10 @@
 
 .sectionTitle {
     color: #aaa;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: bold;
     text-transform: uppercase;
-    letter-spacing: 2px;
+    letter-spacing: 1.8px;
     padding-left: 4px;
     display: flex;
     align-items: center;
@@ -117,21 +128,21 @@
     color: #ffd700;
     padding: 2px 8px;
     border-radius: 8px;
-    font-size: 0.7rem;
+    font-size: 0.68rem;
 }
 
-/* === 总和下注网格 === */
 .totalGrid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
     gap: 6px;
 }
 
-.totalBtn {
+.totalBtn,
+.diceBtn,
+.comboBtn {
     background: rgba(255, 255, 255, 0.06);
     border: 1px solid rgba(255, 255, 255, 0.12);
     border-radius: 8px;
-    padding: 10px 4px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -142,15 +153,16 @@
     color: #fff;
 }
 
-.totalBtn:hover:not(:disabled) {
-    background: rgba(142, 36, 170, 0.3);
-    border-color: rgba(142, 36, 170, 0.6);
-    transform: scale(1.05);
+.totalBtn {
+    padding: 9px 4px;
 }
 
-.totalBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.totalBtn:hover:not(:disabled),
+.diceBtn:hover:not(:disabled),
+.comboBtn:hover:not(:disabled) {
+    background: rgba(142, 36, 170, 0.24);
+    border-color: rgba(142, 36, 170, 0.5);
+    transform: scale(1.03);
 }
 
 .totalBtn.winning {
@@ -159,17 +171,17 @@
     box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
 }
 
-.totalNum {
-    font-size: 1.1rem;
+.totalNum,
+.diceNum {
+    font-size: 1rem;
     font-weight: bold;
 }
 
 .totalOdds {
-    font-size: 0.65rem;
+    font-size: 0.64rem;
     color: #ffd700;
 }
 
-/* === 围骰行 === */
 .tripleRow {
     display: flex;
     gap: 6px;
@@ -189,7 +201,7 @@
     background: rgba(106, 27, 154, 0.25);
     border: 1px solid rgba(186, 104, 200, 0.25);
     border-radius: 8px;
-    padding: 10px 4px;
+    padding: 9px 4px;
     cursor: pointer;
     display: flex;
     flex-direction: column;
@@ -205,22 +217,16 @@
     border-color: rgba(186, 104, 200, 0.6);
 }
 
-.tripleBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
 .tripleDice {
-    font-size: 1rem;
+    font-size: 0.92rem;
     font-weight: bold;
-    letter-spacing: 2px;
+    letter-spacing: 1.5px;
 }
 
-/* === 底部：双骰 + 单骰 并排 === */
 .bottomSection {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 15px;
+    gap: 12px;
 }
 
 .diceGrid {
@@ -230,37 +236,9 @@
 }
 
 .diceBtn {
-    background: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    border-radius: 8px;
-    padding: 12px 6px;
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 3px;
-    transition: all 0.2s;
-    position: relative;
-    color: #fff;
+    padding: 10px 6px;
 }
 
-.diceBtn:hover:not(:disabled) {
-    background: rgba(142, 36, 170, 0.25);
-    border-color: rgba(142, 36, 170, 0.5);
-    transform: scale(1.05);
-}
-
-.diceBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-.diceNum {
-    font-size: 1.1rem;
-    font-weight: bold;
-}
-
-/* === 两骰组合网格 === */
 .comboGrid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -268,33 +246,62 @@
 }
 
 .comboBtn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 10px 6px;
-    cursor: pointer;
-    color: #ccc;
+    padding: 9px 6px;
+    color: #d3cbe1;
     font-weight: bold;
-    font-size: 0.9rem;
-    transition: all 0.2s;
-    position: relative;
+    font-size: 0.86rem;
 }
 
-.comboBtn:hover:not(:disabled) {
-    background: rgba(142, 36, 170, 0.2);
-    border-color: rgba(142, 36, 170, 0.5);
+.mobileTabs {
+    display: flex;
+    gap: 8px;
+}
+
+.mobileTabBtn {
+    flex: 1;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(255, 255, 255, 0.06);
+    color: #d4cce3;
+    border-radius: 999px;
+    padding: 8px 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.mobileTabActive {
+    background: rgba(142, 36, 170, 0.28);
     color: #fff;
+    border-color: rgba(186, 104, 200, 0.45);
+    box-shadow: 0 0 18px rgba(142, 36, 170, 0.2);
 }
 
-.comboBtn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+.mobilePanel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-/* 响应式 */
 @media (max-width: 700px) {
+    .tableContainer {
+        gap: 12px;
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .desktopOnly {
+        display: none;
+    }
+
+    .mobileOnly {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
     .mainBets {
         grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
     }
 
     .totalGrid {
@@ -303,17 +310,47 @@
 
     .bottomSection {
         grid-template-columns: 1fr;
+        gap: 10px;
     }
 
     .comboGrid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    .betBtn {
+        padding: 12px 8px;
+    }
+
+    .betLabel {
+        font-size: 1.35rem;
+    }
+
+    .betDesc,
+    .betOdds,
+    .totalOdds {
+        font-size: 0.66rem;
+    }
+
+    .sectionTitle {
+        font-size: 0.72rem;
+        letter-spacing: 1.2px;
+    }
+
+    .totalBtn,
+    .diceBtn,
+    .tripleBtn,
+    .comboBtn {
+        padding: 8px 4px;
+    }
 }
 
-/* ============ PC 端视口适配 ============ */
 @media (min-width: 1024px) and (max-height: 900px) {
-    .tableContainer {
+    .tableContainer,
+    .desktopOnly {
         gap: 10px;
+    }
+
+    .tableContainer {
         padding: 12px;
     }
 
@@ -322,7 +359,7 @@
     }
 
     .betLabel {
-        font-size: 1.4rem;
+        font-size: 1.35rem;
     }
 
     .totalBtn,

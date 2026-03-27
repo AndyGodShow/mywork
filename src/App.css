@@ -7,6 +7,12 @@
   --gold-secondary: #b8860b;
 }
 
+html,
+body,
+#root {
+  height: 100%;
+}
+
 body {
   margin: 0;
   background-color: var(--bg-color);
@@ -35,36 +41,55 @@ a:active {
 
 .app-container {
   min-height: 100dvh;
+  height: 100dvh;
   width: 100vw;
   display: flex;
   flex-direction: column;
-  padding: 12px 20px;
+  gap: 10px;
+  padding: 10px 16px;
   padding-bottom: env(safe-area-inset-bottom, 12px);
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+.app-container.is-lobby {
+  height: auto;
+  min-height: 100dvh;
   overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .game-container {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   width: 100%;
 }
 
 .game-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 16px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 10px 14px;
   background: rgba(0, 0, 0, 0.3);
   border-radius: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 6px;
+  flex-shrink: 0;
 }
 
 .header-left {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
+  min-width: 0;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: clamp(1.35rem, 1.45rem + 0.9vw, 2.1rem);
+  line-height: 1.05;
 }
 
 .back-btn {
@@ -81,11 +106,58 @@ a:active {
   background: rgba(255, 255, 255, 0.2);
 }
 
+.header-controls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.mode-btn,
+.help-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.mode-btn.active {
+  background: rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.4);
+  color: #f7e39b;
+}
+
+.mode-btn:hover,
+.help-btn:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.help-btn {
+  width: 38px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.back-btn,
+.mode-btn,
+.edu-hub-btn,
+.help-btn {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .game-area {
   flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
   width: 100%;
   max-width: 1200px;
@@ -128,7 +200,9 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+  min-height: 100%;
+  justify-content: space-between;
 }
 
 .strategy-hint-banner {
@@ -156,7 +230,7 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 /* Slots Layout */
@@ -166,7 +240,9 @@ a:active {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
+  min-height: 100%;
+  justify-content: center;
 }
 
 .result-display {
@@ -219,6 +295,7 @@ a:active {
   width: 100%;
   display: flex;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .app-footer {
@@ -240,12 +317,12 @@ a:active {
 
   .game-header {
     padding: 6px 14px;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     border-radius: 8px;
   }
 
   .game-area {
-    gap: 10px;
+    gap: 8px;
   }
 
   .blackjack-layout,
@@ -277,28 +354,28 @@ a:active {
 /* 平板 */
 @media (max-width: 768px) {
   .app-container {
-    padding: 10px;
+    padding: 8px;
+    gap: 8px;
   }
 
   .game-header {
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 8px 10px;
   }
 
   .header-left {
-    gap: 10px;
+    gap: 8px;
+    justify-content: space-between;
   }
 
   .header-left h1 {
-    font-size: 1.1rem;
+    font-size: 1rem;
   }
 
   .header-controls {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 8px;
+    justify-content: flex-start;
+    gap: 6px;
     width: 100%;
   }
 
@@ -306,18 +383,19 @@ a:active {
   .edu-hub-btn,
   .help-btn,
   .back-btn {
+    min-height: 34px;
     padding: 6px 12px;
     font-size: 0.8rem;
   }
 
   .game-area {
-    gap: 15px;
+    gap: 10px;
   }
 
   .blackjack-layout,
   .roulette-layout,
   .slots-layout {
-    gap: 20px;
+    gap: 12px;
   }
 
   .result-display {
@@ -335,11 +413,12 @@ a:active {
 @media (max-width: 480px) {
   .app-container {
     padding: 6px;
+    gap: 6px;
   }
 
   .game-header {
     border-radius: 8px;
-    margin-bottom: 10px;
+    margin-bottom: 2px;
     padding: 8px;
   }
 
@@ -357,7 +436,7 @@ a:active {
   }
 
   .game-area {
-    gap: 10px;
+    gap: 8px;
     max-width: 100%;
   }
 

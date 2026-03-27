@@ -10,6 +10,8 @@ interface GameTableProps {
 }
 
 export const GameTable: React.FC<GameTableProps> = ({ gameState, deckRemaining }) => {
+    const hasHistory = gameState.history.length > 0;
+
     return (
         <div className={styles.table}>
             <div className={styles.deckInfo}>
@@ -60,9 +62,13 @@ export const GameTable: React.FC<GameTableProps> = ({ gameState, deckRemaining }
             </div>
 
             {/* Roadmap Area */}
-            <div className={styles.roadmapArea}>
-                <BeadPlate history={gameState.history} />
-            </div>
+            {hasHistory ? (
+                <div className={styles.roadmapArea}>
+                    <BeadPlate history={gameState.history} />
+                </div>
+            ) : (
+                <div className={styles.roadmapHint}>开局后这里会显示路单走势</div>
+            )}
         </div>
     );
 };

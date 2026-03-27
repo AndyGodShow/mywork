@@ -1,6 +1,6 @@
 // ===== 骰宝下注桌面 =====
 
-import React from 'react';
+import React, { useState } from 'react';
 import type { SicBoGameState, SicBoBetType } from '../types';
 import { TOTAL_PAYOUTS } from '../types';
 import styles from './SicBoTable.module.css';
@@ -11,7 +11,6 @@ interface SicBoTableProps {
     selectedChip: number;
 }
 
-/** 两骰组合列表 */
 const TWO_DICE_COMBOS = [
     [1, 2], [1, 3], [1, 4], [1, 5], [1, 6],
     [2, 3], [2, 4], [2, 5], [2, 6],
@@ -20,15 +19,15 @@ const TWO_DICE_COMBOS = [
     [5, 6],
 ];
 
-/** 统计某类下注的总额 */
 const getBetTotal = (gameState: SicBoGameState, type: SicBoBetType, value?: number): number => {
     return gameState.bets
-        .filter(b => b.type === type && (value === undefined || b.value === value))
-        .reduce((sum, b) => sum + b.amount, 0);
+        .filter((bet) => bet.type === type && (value === undefined || bet.value === value))
+        .reduce((sum, bet) => sum + bet.amount, 0);
 };
 
 export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, selectedChip }) => {
     const isBetting = gameState.phase === 'BETTING';
+    const [activePanel, setActivePanel] = useState<'overview' | 'special' | 'combos'>('overview');
 
     const handleClick = (type: SicBoBetType, value?: number) => {
         if (!isBetting) return;
@@ -41,9 +40,8 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
         return <span className={styles.chipBadge}>${total}</span>;
     };
 
-    return (
-        <div className={styles.tableContainer}>
-            {/* === 顶部：大/小 + 单/双 === */}
+    const overviewSection = (
+        <>
             <div className={styles.mainBets}>
                 <button
                     className={`${styles.betBtn} ${styles.smallBet}`}
@@ -87,7 +85,6 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
                 </button>
             </div>
 
-            {/* === 总和下注 === */}
             <div className={styles.section}>
                 <div className={styles.sectionTitle}>总和下注</div>
                 <div className={styles.totalGrid}>
@@ -95,8 +92,8 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
                         <button
                             key={num}
                             className={`${styles.totalBtn} ${gameState.dice && (gameState.dice[0] + gameState.dice[1] + gameState.dice[2]) === Number(num)
-                                    ? styles.winning : ''
-                                }`}
+                                ? styles.winning
+                                : ''}`}
                             onClick={() => handleClick('total', Number(num))}
                             disabled={!isBetting}
                         >
@@ -107,8 +104,11 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
                     ))}
                 </div>
             </div>
+        </>
+    );
 
-            {/* === 围骰区 === */}
+    const specialSection = (
+        <>
             <div className={styles.section}>
                 <div className={styles.sectionTitle}>围骰</div>
                 <div className={styles.tripleRow}>
@@ -121,10 +121,10 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
                         <span className={styles.betOdds}>30:1</span>
                         {renderChipBadge('any_triple')}
                     </button>
-                    {[1, 2, 3, 4, 5, 6].map(n => (
+                    {[1, 2, 3, 4, 5, 6].map((n) => (
                         <button
                             key={n}
-                            className={`${styles.tripleBtn}`}
+                            className={styles.tripleBtn}
                             onClick={() => handleClick('specific_triple', n)}
                             disabled={!isBetting}
                         >
@@ -136,12 +136,11 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
                 </div>
             </div>
 
-            {/* === 双骰 + 单骰 === */}
             <div className={styles.bottomSection}>
                 <div className={styles.section}>
                     <div className={styles.sectionTitle}>双骰</div>
                     <div className={styles.diceGrid}>
-                        {[1, 2, 3, 4, 5, 6].map(n => (
+                        {[1, 2, 3, 4, 5, 6].map((n) => (
                             <button
                                 key={n}
                                 className={styles.diceBtn}
@@ -159,7 +158,7 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
                 <div className={styles.section}>
                     <div className={styles.sectionTitle}>单骰</div>
                     <div className={styles.diceGrid}>
-                        {[1, 2, 3, 4, 5, 6].map(n => (
+                        {[1, 2, 3, 4, 5, 6].map((n) => (
                             <button
                                 key={n}
                                 className={styles.diceBtn}
@@ -174,22 +173,68 @@ export const SicBoTable: React.FC<SicBoTableProps> = ({ gameState, onPlaceBet, s
                     </div>
                 </div>
             </div>
+        </>
+    );
 
-            {/* === 两骰组合 === */}
-            <div className={styles.section}>
-                <div className={styles.sectionTitle}>两骰组合 <span className={styles.oddsTag}>5:1</span></div>
-                <div className={styles.comboGrid}>
-                    {TWO_DICE_COMBOS.map(([a, b]) => (
-                        <button
-                            key={`${a}${b}`}
-                            className={styles.comboBtn}
-                            onClick={() => handleClick('two_dice_combo', a * 10 + b)}
-                            disabled={!isBetting}
-                        >
-                            <span>{a}-{b}</span>
-                            {renderChipBadge('two_dice_combo', a * 10 + b)}
-                        </button>
-                    ))}
+    const comboSection = (
+        <div className={styles.section}>
+            <div className={styles.sectionTitle}>
+                两骰组合
+                <span className={styles.oddsTag}>5:1</span>
+            </div>
+            <div className={styles.comboGrid}>
+                {TWO_DICE_COMBOS.map(([a, b]) => (
+                    <button
+                        key={`${a}${b}`}
+                        className={styles.comboBtn}
+                        onClick={() => handleClick('two_dice_combo', a * 10 + b)}
+                        disabled={!isBetting}
+                    >
+                        <span>{a}-{b}</span>
+                        {renderChipBadge('two_dice_combo', a * 10 + b)}
+                    </button>
+                ))}
+            </div>
+        </div>
+    );
+
+    return (
+        <div className={styles.tableContainer}>
+            <div className={styles.desktopOnly}>
+                {overviewSection}
+                {specialSection}
+                {comboSection}
+            </div>
+
+            <div className={styles.mobileOnly}>
+                <div className={styles.mobileTabs}>
+                    <button
+                        className={`${styles.mobileTabBtn} ${activePanel === 'overview' ? styles.mobileTabActive : ''}`}
+                        onClick={() => setActivePanel('overview')}
+                        type="button"
+                    >
+                        基础盘
+                    </button>
+                    <button
+                        className={`${styles.mobileTabBtn} ${activePanel === 'special' ? styles.mobileTabActive : ''}`}
+                        onClick={() => setActivePanel('special')}
+                        type="button"
+                    >
+                        围骰
+                    </button>
+                    <button
+                        className={`${styles.mobileTabBtn} ${activePanel === 'combos' ? styles.mobileTabActive : ''}`}
+                        onClick={() => setActivePanel('combos')}
+                        type="button"
+                    >
+                        组合
+                    </button>
+                </div>
+
+                <div className={styles.mobilePanel}>
+                    {activePanel === 'overview' && overviewSection}
+                    {activePanel === 'special' && specialSection}
+                    {activePanel === 'combos' && comboSection}
                 </div>
             </div>
         </div>

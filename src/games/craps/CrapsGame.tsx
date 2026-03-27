@@ -7,6 +7,7 @@ import { CrapsSimulationPanel } from './components/CrapsSimulation';
 import { CrapsRulesModal } from './components/CrapsRulesModal';
 import { EducationalOverlay } from '../../components/Common/EducationalOverlay';
 import { confirmResetBalance } from '../../utils/confirmResetBalance';
+import { useMediaQuery } from '../../hooks/useMediaQuery';
 import '../../App.css';
 import styles from './components/Craps.module.css';
 
@@ -51,6 +52,8 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
     const [customChip, setCustomChip] = useState('');
     const [showEdu, setShowEdu] = useState(false);
     const [showRules, setShowRules] = useState(false);
+    const isCompactViewport = useMediaQuery('(max-width: 700px)');
+    const [showPropBetsOnMobile, setShowPropBetsOnMobile] = useState(false);
 
     const totalBet = gameState.bets.reduce((s, b) => s + b.amount, 0);
     const canBet = gameState.phase === 'BETTING' || gameState.phase === 'POINT_SET';
@@ -71,6 +74,7 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
     };
 
     const isComeOut = gameState.roundStatus === 'come_out';
+    const showPropBets = !isCompactViewport || showPropBetsOnMobile;
 
     // 消息类型
     const msgClass = gameState.message.includes('🎉') || gameState.message.includes('赢得')
@@ -195,31 +199,44 @@ export const CrapsGame: React.FC<Props> = ({ onBackToLobby }) => {
                                 {getBetTotal('field') > 0 && <span className={styles.chipBadge}>${getBetTotal('field')}</span>}
                             </button>
 
-                            <div className={styles.divider}>Proposition Bets</div>
+                                    {isCompactViewport && (
+                                        <button
+                                            type="button"
+                                            className={styles.propToggleBtn}
+                                            onClick={() => setShowPropBetsOnMobile((prev) => !prev)}
+                                        >
+                                            {showPropBets ? '收起边注' : '展开边注'}
+                                        </button>
+                                    )}
 
-                            {/* Proposition Bets */}
-                            <div className={styles.propBetsRow}>
-                                <button
-                                    className={`${styles.betBtn} ${styles.anySevenBtn}`}
-                                    onClick={() => canBet && placeBet('any_seven', selectedChip)}
-                                    disabled={!canBet}
-                                >
-                                    <span className={styles.betLabel}>Any 7</span>
-                                    <span className={styles.betOdds}>4:1</span>
-                                    <span className={styles.betDesc}>仅总和7</span>
-                                    {getBetTotal('any_seven') > 0 && <span className={styles.chipBadge}>${getBetTotal('any_seven')}</span>}
-                                </button>
-                                <button
-                                    className={`${styles.betBtn} ${styles.anyCrapsBtn}`}
-                                    onClick={() => canBet && placeBet('any_craps', selectedChip)}
-                                    disabled={!canBet}
-                                >
-                                    <span className={styles.betLabel}>Any Craps</span>
-                                    <span className={styles.betOdds}>7:1</span>
-                                    <span className={styles.betDesc}>2, 3, 12</span>
-                                    {getBetTotal('any_craps') > 0 && <span className={styles.chipBadge}>${getBetTotal('any_craps')}</span>}
-                                </button>
-                            </div>
+                            {showPropBets && (
+                                <>
+                                    <div className={styles.divider}>Proposition Bets</div>
+
+                                    <div className={styles.propBetsRow}>
+                                        <button
+                                            className={`${styles.betBtn} ${styles.anySevenBtn}`}
+                                            onClick={() => canBet && placeBet('any_seven', selectedChip)}
+                                            disabled={!canBet}
+                                        >
+                                            <span className={styles.betLabel}>Any 7</span>
+                                            <span className={styles.betOdds}>4:1</span>
+                                            <span className={styles.betDesc}>仅总和7</span>
+                                            {getBetTotal('any_seven') > 0 && <span className={styles.chipBadge}>${getBetTotal('any_seven')}</span>}
+                                        </button>
+                                        <button
+                                            className={`${styles.betBtn} ${styles.anyCrapsBtn}`}
+                                            onClick={() => canBet && placeBet('any_craps', selectedChip)}
+                                            disabled={!canBet}
+                                        >
+                                            <span className={styles.betLabel}>Any Craps</span>
+                                            <span className={styles.betOdds}>7:1</span>
+                                            <span className={styles.betDesc}>2, 3, 12</span>
+                                            {getBetTotal('any_craps') > 0 && <span className={styles.chipBadge}>${getBetTotal('any_craps')}</span>}
+                                        </button>
+                                    </div>
+                                </>
+                            )}
                         </div>
 
                         {/* ===== 控制区 ===== */}

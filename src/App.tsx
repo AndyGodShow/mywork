@@ -67,6 +67,7 @@ function App() {
   const [screen, setScreen] = useState<Screen>('LOBBY');
   const [pendingGameId, setPendingGameId] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+  const isLobby = screen === 'LOBBY';
 
   const preloadGame = (gameId: string) => {
     const preload = GAME_PRELOADERS[gameId];
@@ -117,8 +118,8 @@ function App() {
   }, []);
 
   return (
-    <div className="app-container">
-      {screen === 'LOBBY' && (
+    <div className={`app-container ${isLobby ? 'is-lobby' : 'is-game'}`}>
+      {isLobby && (
         <Lobby
           onSelectGame={handleSelectGame}
           onPreviewGame={preloadGame}
@@ -139,9 +140,11 @@ function App() {
         </Suspense>
       </ErrorBoundary>
 
-      <footer className="app-footer">
-        <p>教育用途模拟器 - 请勿用于真实赌博</p>
-      </footer>
+      {isLobby && (
+        <footer className="app-footer">
+          <p>教育用途模拟器 - 请勿用于真实赌博</p>
+        </footer>
+      )}
     </div>
   );
 }

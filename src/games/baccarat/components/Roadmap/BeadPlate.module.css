@@ -1,10 +1,9 @@
 .beadPlateContainer {
     background: rgba(0, 0, 0, 0.4);
-    padding: 10px;
+    padding: 8px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: inline-block;
     border-radius: 12px;
-    margin-top: 20px;
     box-shadow:
         0 4px 20px rgba(0, 0, 0, 0.5),
         inset 0 0 20px rgba(0, 0, 0, 0.5);
@@ -22,8 +21,8 @@
 }
 
 .cell {
-    width: 34px;
-    height: 34px;
+    width: 24px;
+    height: 24px;
     background: rgba(255, 255, 255, 0.03);
     /* Subtle cell bg */
     display: flex;
@@ -36,13 +35,13 @@
 }
 
 .bead {
-    width: 28px;
-    height: 28px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 900;
     color: white;
     position: relative;
@@ -75,8 +74,8 @@
     position: absolute;
     bottom: -2px;
     right: -2px;
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background: #3498db;
     border: 1px solid white;
     border-radius: 50%;
@@ -88,8 +87,8 @@
     position: absolute;
     top: -2px;
     left: -2px;
-    width: 8px;
-    height: 8px;
+    width: 6px;
+    height: 6px;
     background: #e74c3c;
     border: 1px solid white;
     border-radius: 50%;
@@ -98,9 +97,37 @@
 }
 
 .emptyCell {
-    width: 34px;
-    height: 34px;
+    width: 24px;
+    height: 24px;
     background: rgba(255, 255, 255, 0.02);
     border-radius: 4px;
     border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+@media (max-width: 768px) {
+    .beadPlateContainer {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+    }
+
+    .cell,
+    .emptyCell {
+        width: 16px;
+        height: 16px;
+        border-radius: 3px;
+    }
+
+    .bead {
+        width: 14px;
+        height: 14px;
+        font-size: 7px;
+    }
+
+    .playerPairDot,
+    .bankerPairDot {
+        width: 4px;
+        height: 4px;
+        border-width: 0;
+    }
 }

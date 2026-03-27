@@ -1,11 +1,11 @@
 .controlsContainer {
     background: rgba(0, 0, 0, 0.4);
-    padding: 20px;
+    padding: 14px 16px;
     border-radius: 15px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 14px;
     width: 100%;
     max-width: 900px;
     margin: 0 auto;
@@ -21,7 +21,7 @@
 
 .stat {
     color: #aaa;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 .stat span {
@@ -99,7 +99,7 @@
 .chipsRow {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 14px;
     flex-wrap: wrap;
     justify-content: center;
     margin-bottom: 10px;
@@ -107,7 +107,7 @@
 
 .presetChips {
     display: flex;
-    gap: 15px;
+    gap: 12px;
 }
 
 .customChipInputWrapper {
@@ -126,7 +126,7 @@
 
 .chipInput {
     width: 100px;
-    height: 50px;
+    height: 46px;
     background: rgba(0, 0, 0, 0.3);
     border: 2px solid rgba(255, 255, 255, 0.2);
     border-radius: 25px;
@@ -153,8 +153,8 @@
 }
 
 .chip {
-    width: 50px;
-    height: 50px;
+    width: 46px;
+    height: 46px;
     border-radius: 50%;
     border: 4px dashed rgba(255, 255, 255, 0.3);
     background: #c62828;
@@ -191,13 +191,13 @@
 
 .mainButtons {
     display: flex;
-    gap: 20px;
+    gap: 12px;
 }
 
 .rollBtn,
 .clearBtn,
 .resetBtn {
-    padding: 12px 30px;
+    padding: 11px 24px;
     border-radius: 30px;
     border: none;
     font-weight: bold;
@@ -245,8 +245,8 @@
         position: sticky;
         bottom: 0;
         z-index: 50;
-        padding: 15px;
-        padding-bottom: calc(15px + env(safe-area-inset-bottom, 10px));
+        padding: 10px 12px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 8px));
         border-radius: 20px 20px 0 0;
         background: rgba(10, 14, 26, 0.95);
         backdrop-filter: blur(10px);
@@ -261,12 +261,12 @@
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         scroll-snap-type: x mandatory;
-        padding-bottom: 15px;
+        padding-bottom: 10px;
         margin-left: -5px;
         margin-right: -5px;
         padding-left: 10px;
         padding-right: 10px;
-        gap: 12px;
+        gap: 10px;
         scrollbar-width: none;
     }
 
@@ -289,24 +289,24 @@
     }
 
     .chipInput {
-        width: 80px;
-        height: 44px;
+        width: 76px;
+        height: 40px;
         font-size: 1rem;
     }
 
     .mainButtons {
         flex-direction: row;
-        gap: 10px;
+        gap: 8px;
         width: 100%;
-        margin-top: 5px;
+        margin-top: 2px;
     }
 
     .rollBtn,
     .clearBtn,
     .resetBtn {
         flex: 1;
-        padding: 12px 10px;
-        font-size: 1rem;
+        padding: 10px 8px;
+        font-size: 0.92rem;
     }
 
     .rollBtn {
