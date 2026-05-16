@@ -8,6 +8,8 @@ interface EducationalContent {
         content: string;
         highlights?: string[];
     }[];
+    badgeText?: string;
+    footerTip?: string;
 }
 
 interface EducationalOverlayProps {
@@ -99,7 +101,7 @@ export const EducationalOverlay: React.FC<EducationalOverlayProps> = ({ isOpen, 
                     &times;
                 </button>
                 <div className="edu-header">
-                    <span className="edu-badge">🎓 教育研究</span>
+                    <span className="edu-badge">{content.badgeText ?? '🎓 教育研究'}</span>
                     <h2 id={titleId}>{content.title}</h2>
                 </div>
                 <div className="edu-scroll-area" id={descriptionId}>
@@ -116,7 +118,7 @@ export const EducationalOverlay: React.FC<EducationalOverlayProps> = ({ isOpen, 
                     ))}
                 </div>
                 <div className="edu-footer">
-                    <p>知识提示：长期下注高赌场期望值的选项（如和局）通常是亏损的主要原因。</p>
+                    <p>{content.footerTip ?? '知识提示：长期下注高赌场期望值的选项通常会导致持续亏损。'}</p>
                 </div>
             </div>
         </div>

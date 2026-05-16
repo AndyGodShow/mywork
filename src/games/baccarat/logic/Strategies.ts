@@ -5,6 +5,29 @@ export interface Bet {
     amount: number;
 }
 
+export const BACCARAT_STRATEGY_OPTIONS: { name: string; description: string }[] = [
+    { name: '平注押闲 (Flat Player)', description: '每局固定注码押闲' },
+    { name: '平注押庄 (Flat Banker)', description: '每局固定注码押庄' },
+    { name: '倍投押闲 (Martingale Player)', description: '输后翻倍注码押闲' },
+    { name: '倍投押庄 (Martingale Banker)', description: '输后翻倍注码押庄' },
+    { name: '倍投随机 (Martingale Random)', description: '输后翻倍，随机押庄闲' },
+    { name: '全程押和 (Always Tie)', description: '每局固定注码押和' },
+    { name: '随机下注 (Random)', description: '45%闲/45%庄/10%和随机' },
+];
+
+export const createBaccaratStrategy = (index: number, baseBet: number): BettingStrategy => {
+    switch (index) {
+        case 0: return new FlatBetStrategy(baseBet, 'PLAYER');
+        case 1: return new FlatBetStrategy(baseBet, 'BANKER');
+        case 2: return new MartingaleStrategy(baseBet, 'PLAYER');
+        case 3: return new MartingaleStrategy(baseBet, 'BANKER');
+        case 4: return new MartingaleRandomStrategy(baseBet);
+        case 5: return new AlwaysTieStrategy(baseBet);
+        case 6: return new RandomStrategy(baseBet);
+        default: return new FlatBetStrategy(baseBet, 'PLAYER');
+    }
+};
+
 export interface BettingStrategy {
     name: string;
     description: string;

@@ -1,7 +1,7 @@
 // ===== 花旗骰策略 =====
 import type { CrapsBet } from '../types';
 
-interface CrapsStrategy {
+export interface CrapsStrategy {
     name: string;
     description: string;
     getBets: (baseBet: number) => CrapsBet[];

@@ -2,7 +2,7 @@
 
 import type { DragonTigerBet } from '../types';
 
-interface DTStrategy {
+export interface DTStrategy {
     name: string;
     description: string;
     getBets: (baseBet: number) => DragonTigerBet[];

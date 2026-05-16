@@ -1,7 +1,7 @@
 // ===== 三公策略 =====
 import type { SanGongBet } from '../types';
 
-interface SGStrategy {
+export interface SGStrategy {
     name: string;
     description: string;
     getBets: (baseBet: number) => SanGongBet[];
