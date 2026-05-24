@@ -1,5 +1,10 @@
 # Casino Education Simulator
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![React](https://img.shields.io/badge/React-19-61dafb.svg)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-blue.svg)](https://www.typescriptlang.org/)
+[![Vite](https://img.shields.io/badge/Vite-7-646cff.svg)](https://vite.dev/)
+
 一个面向概率学习的赌场游戏教育模拟器。项目通过单局可视化、规则讲解和批量模拟，帮助用户观察赌场优势、资金曲线、短期波动和常见下注策略在长期中的表现。
 
 > 本项目仅供数学教育、概率研究与前端练习使用，不提供真实下注、充值、提现或任何赌博服务。
@@ -50,6 +55,16 @@ npm test
 npm run lint
 npm run preview
 ```
+
+## 开源参与
+
+这个项目采用 [MIT License](LICENSE) 开源。欢迎提交 Issue 和 Pull Request，尤其是规则修正、测试补充、移动端体验优化、文档改进和新的教育型模拟策略。
+
+参与前请阅读：
+
+- [Contributing Guide](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
 
 ## 项目结构
 

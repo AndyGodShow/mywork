@@ -1,0 +1,54 @@
+name: Bug report
+description: Report a reproducible bug in the simulator
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve the project. Do not include personal data, tokens, private deployment URLs, or account screenshots.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the exact steps needed to see the issue.
+      placeholder: |
+        1. Open #/games/roulette
+        2. Place ...
+        3. Click ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: input
+    id: game
+    attributes:
+      label: Game or page
+      placeholder: "baccarat, blackjack, roulette, lobby..."
+  - type: input
+    id: environment
+    attributes:
+      label: Browser / device
+      placeholder: "Chrome 126 on macOS, Safari on iPhone..."
+  - type: textarea
+    id: notes
+    attributes:
+      label: Additional notes
+      description: Add screenshots only if they do not contain sensitive information.

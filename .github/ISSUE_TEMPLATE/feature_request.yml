@@ -1,0 +1,32 @@
+name: Feature request
+description: Suggest a learning-focused improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This project is for probability education. Please do not request real-money betting, deposits, withdrawals, gambling promotion, or bypasses for legal restrictions.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Learning problem
+      description: What should users understand better after this change?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe the feature, rule, strategy, visualization, or documentation change.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+  - type: textarea
+    id: references
+    attributes:
+      label: References
+      description: Link to public rule/probability references if relevant.
